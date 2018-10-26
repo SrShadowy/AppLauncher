@@ -1,0 +1,10 @@
+C:\Users\Erick\source\repos\AL\AL\bin\Release\AL.exe.config
+C:\Users\Erick\source\repos\AL\AL\bin\Release\AL.exe
+C:\Users\Erick\source\repos\AL\AL\bin\Release\AL.pdb
+C:\Users\Erick\source\repos\AL\AL\obj\Release\AL.csprojAssemblyReference.cache
+C:\Users\Erick\source\repos\AL\AL\obj\Release\AL.Form1.resources
+C:\Users\Erick\source\repos\AL\AL\obj\Release\AL.Properties.Resources.resources
+C:\Users\Erick\source\repos\AL\AL\obj\Release\AL.csproj.GenerateResource.cache
+C:\Users\Erick\source\repos\AL\AL\obj\Release\AL.csproj.CoreCompileInputs.cache
+C:\Users\Erick\source\repos\AL\AL\obj\Release\AL.exe
+C:\Users\Erick\source\repos\AL\AL\obj\Release\AL.pdb

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.arquivoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.abrirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,14 +85,14 @@
             // abrirToolStripMenuItem
             // 
             this.abrirToolStripMenuItem.Name = "abrirToolStripMenuItem";
-            this.abrirToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.abrirToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.abrirToolStripMenuItem.Text = "Abrir";
             this.abrirToolStripMenuItem.Click += new System.EventHandler(this.abrirToolStripMenuItem_Click);
             // 
             // sairToolStripMenuItem
             // 
             this.sairToolStripMenuItem.Name = "sairToolStripMenuItem";
-            this.sairToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.sairToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sairToolStripMenuItem.Text = "Sair";
             this.sairToolStripMenuItem.Click += new System.EventHandler(this.sairToolStripMenuItem_Click);
             // 
@@ -145,7 +146,7 @@
             this.abrirLocalToolStripMenuItem,
             this.apagarItemDaListaToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(230, 114);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(230, 92);
             // 
             // abrirToolStripMenuItem1
             // 
@@ -244,7 +245,7 @@
             // 
             this.sobreOProgramarToolStripMenuItem.Name = "sobreOProgramarToolStripMenuItem";
             this.sobreOProgramarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.sobreOProgramarToolStripMenuItem.Text = "Sobre o programar";
+            this.sobreOProgramarToolStripMenuItem.Text = "Sobre o programa";
             this.sobreOProgramarToolStripMenuItem.Click += new System.EventHandler(this.sobreOProgramarToolStripMenuItem_Click);
             // 
             // apagarItemDaListaToolStripMenuItem
@@ -261,9 +262,9 @@
             this.ClientSize = new System.Drawing.Size(430, 226);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.ShowIcon = false;
             this.Text = "Main";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
