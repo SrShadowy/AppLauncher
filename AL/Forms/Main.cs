@@ -12,6 +12,10 @@ namespace AL
         {
             InitializeComponent();
         }
+        //-----------------Variaveis globais ----------------
+        ListBox mylist = new ListBox();
+        string result;
+        //---------------------------------------------------
 
         public class IconExtractor
         {
@@ -69,7 +73,6 @@ namespace AL
             }
         }
 
-
        private void executar(bool adm)
         {
             int indexlist = listView1.SelectedIndices[0];
@@ -94,14 +97,10 @@ namespace AL
             }
         }
 
-
         private void sairToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
         }
-
-        ListBox mylist = new ListBox();
-       string result;
 
 
         private void Form1_Load(object sender, EventArgs e)
@@ -208,6 +207,75 @@ namespace AL
                 e.Effect = DragDropEffects.All;
             else
                 e.Effect = DragDropEffects.None;
+        }
+
+        private void salvarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                File.Delete(Application.StartupPath + "\\lista.txt");
+                for (int i = 0; i <= mylist.Items.Count; i++)
+                {
+                    var x = File.AppendText(Application.StartupPath + "\\lista.txt");
+                    x.WriteLine(mylist.Items[i]);
+                    x.Close();
+                }
+            }
+            catch { }
+        }
+
+        private void abrirLocalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int indexforfile = listView1.SelectedIndices[0];
+            mylist.SelectedIndex = indexforfile;
+            string pasta = Path.GetDirectoryName(mylist.SelectedItem.ToString());
+            System.Diagnostics.Process.Start(pasta);
+        }
+
+        private void explorarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int indexforfile = listView1.SelectedIndices[0];
+                mylist.SelectedIndex = indexforfile;
+                string pasta = Path.GetDirectoryName(mylist.SelectedItem.ToString());
+                System.Diagnostics.Process.Start(pasta);
+            }
+            catch {
+                //Nenhum item selecionado
+            }
+        }
+
+        private void adicionarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog abrir = new OpenFileDialog();
+            string filename;
+           if( abrir.ShowDialog() == DialogResult.OK)
+            {
+                filename = abrir.FileName;
+                Icon largeIcon = IconExtractor.ExtractIconLarge(filename);
+                imageList1.Images.Add(largeIcon.ToBitmap());
+                result = Path.GetFileNameWithoutExtension(filename);
+                mylist.Items.Add(filename);
+                listView1.Items.Add(result, imageList1.Images.Count - 1);
+            }
+        }
+
+        private void limparListaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            mylist.Items.Clear();
+            listView1.Clear();
+        }
+
+        private void apagarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int val = listView1.SelectedIndices[0];
+                mylist.Items.RemoveAt(val);
+                listView1.Items.RemoveAt(val);
+            }
+            catch { MessageBox.Show("Erro ao remover", "Erros e Erros..."); }
         }
     }
 }

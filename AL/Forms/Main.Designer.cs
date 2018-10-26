@@ -51,6 +51,7 @@
             this.apagarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.salvarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sobreOProgramarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -106,6 +107,8 @@
             // 
             // sobreToolStripMenuItem
             // 
+            this.sobreToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sobreOProgramarToolStripMenuItem});
             this.sobreToolStripMenuItem.Name = "sobreToolStripMenuItem";
             this.sobreToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.sobreToolStripMenuItem.Text = "Sobre";
@@ -161,6 +164,7 @@
             this.abrirLocalToolStripMenuItem.Name = "abrirLocalToolStripMenuItem";
             this.abrirLocalToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
             this.abrirLocalToolStripMenuItem.Text = "Abrir local";
+            this.abrirLocalToolStripMenuItem.Click += new System.EventHandler(this.abrirLocalToolStripMenuItem_Click);
             // 
             // visualizarToolStripMenuItem
             // 
@@ -198,36 +202,47 @@
             this.limparListaToolStripMenuItem.Name = "limparListaToolStripMenuItem";
             this.limparListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.limparListaToolStripMenuItem.Text = "limpar lista";
+            this.limparListaToolStripMenuItem.Click += new System.EventHandler(this.limparListaToolStripMenuItem_Click);
             // 
             // explorarToolStripMenuItem
             // 
             this.explorarToolStripMenuItem.Name = "explorarToolStripMenuItem";
             this.explorarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.explorarToolStripMenuItem.Text = "explorar";
+            this.explorarToolStripMenuItem.Click += new System.EventHandler(this.explorarToolStripMenuItem_Click);
             // 
             // adicionarToolStripMenuItem
             // 
             this.adicionarToolStripMenuItem.Name = "adicionarToolStripMenuItem";
             this.adicionarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.adicionarToolStripMenuItem.Text = "adicionar";
+            this.adicionarToolStripMenuItem.Click += new System.EventHandler(this.adicionarToolStripMenuItem_Click);
             // 
             // apagarToolStripMenuItem
             // 
             this.apagarToolStripMenuItem.Name = "apagarToolStripMenuItem";
             this.apagarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.apagarToolStripMenuItem.Text = "apagar";
+            this.apagarToolStripMenuItem.Click += new System.EventHandler(this.apagarToolStripMenuItem_Click);
             // 
             // salvarToolStripMenuItem
             // 
             this.salvarToolStripMenuItem.Name = "salvarToolStripMenuItem";
             this.salvarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.salvarToolStripMenuItem.Text = "Salvar";
+            this.salvarToolStripMenuItem.Click += new System.EventHandler(this.salvarToolStripMenuItem_Click);
             // 
             // importarToolStripMenuItem
             // 
             this.importarToolStripMenuItem.Name = "importarToolStripMenuItem";
             this.importarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.importarToolStripMenuItem.Text = "Importar";
+            // 
+            // sobreOProgramarToolStripMenuItem
+            // 
+            this.sobreOProgramarToolStripMenuItem.Name = "sobreOProgramarToolStripMenuItem";
+            this.sobreOProgramarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sobreOProgramarToolStripMenuItem.Text = "Sobre o programar";
             // 
             // Form1
             // 
@@ -273,6 +288,7 @@
         private System.Windows.Forms.ToolStripMenuItem explorarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem adicionarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem apagarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sobreOProgramarToolStripMenuItem;
     }
 }
 
