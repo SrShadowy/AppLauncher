@@ -156,6 +156,12 @@ namespace AL
                     executar(false);
                 }
             }
+            if(e.KeyCode == Keys.Delete)
+            {
+                int val = listView1.SelectedIndices[0];
+                mylist.Items.RemoveAt(val);
+                listView1.Items.RemoveAt(val);
+            }
         }
 
         private void listView1_MouseClick(object sender, MouseEventArgs e)
@@ -276,6 +282,18 @@ namespace AL
                 listView1.Items.RemoveAt(val);
             }
             catch { MessageBox.Show("Erro ao remover", "Erros e Erros..."); }
+        }
+
+        private void sobreOProgramarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Programa criado em 26 de outubro 2018 applaucher", "sobre");
+        }
+
+        private void apagarItemDaListaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int val = listView1.SelectedIndices[0];
+            mylist.Items.RemoveAt(val);
+            listView1.Items.RemoveAt(val);
         }
     }
 }

@@ -52,6 +52,7 @@
             this.salvarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sobreOProgramarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.apagarItemDaListaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -65,7 +66,7 @@
             this.sobreToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(408, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(430, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -120,7 +121,7 @@
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(0, 24);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(408, 202);
+            this.listView1.Size = new System.Drawing.Size(430, 202);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
@@ -141,9 +142,10 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.abrirToolStripMenuItem1,
             this.executarComoAdminsitradorToolStripMenuItem,
-            this.abrirLocalToolStripMenuItem});
+            this.abrirLocalToolStripMenuItem,
+            this.apagarItemDaListaToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(230, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(230, 114);
             // 
             // abrirToolStripMenuItem1
             // 
@@ -243,12 +245,20 @@
             this.sobreOProgramarToolStripMenuItem.Name = "sobreOProgramarToolStripMenuItem";
             this.sobreOProgramarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sobreOProgramarToolStripMenuItem.Text = "Sobre o programar";
+            this.sobreOProgramarToolStripMenuItem.Click += new System.EventHandler(this.sobreOProgramarToolStripMenuItem_Click);
+            // 
+            // apagarItemDaListaToolStripMenuItem
+            // 
+            this.apagarItemDaListaToolStripMenuItem.Name = "apagarItemDaListaToolStripMenuItem";
+            this.apagarItemDaListaToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.apagarItemDaListaToolStripMenuItem.Text = "apagar item da lista";
+            this.apagarItemDaListaToolStripMenuItem.Click += new System.EventHandler(this.apagarItemDaListaToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(408, 226);
+            this.ClientSize = new System.Drawing.Size(430, 226);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -289,6 +299,7 @@
         private System.Windows.Forms.ToolStripMenuItem adicionarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem apagarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sobreOProgramarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem apagarItemDaListaToolStripMenuItem;
     }
 }
 
