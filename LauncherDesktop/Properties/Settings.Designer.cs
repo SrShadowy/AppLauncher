@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AL.Properties
+namespace LauncherDesktop.Properties
 {
 
 
