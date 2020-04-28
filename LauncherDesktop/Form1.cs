@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -148,12 +149,11 @@ namespace LauncherDesktop
             lista_icons.Images.Clear();
             lista_icons.Images.Add(defaulticon);
         }
-    
         void SaveList()
         {
             System.IO.File.WriteAllLines(myFile, mylist.Items.OfType<string>().ToArray());
+            change = false;
         }
-
         void loadFile()
         {
 
@@ -184,9 +184,20 @@ namespace LauncherDesktop
         }
         void changueItens()
         {
-            this.Text += "*";
+            this.Text = this.Text+ "*";
             change = true;
         }
+        void questionHide()
+        {
+          var ButtonsResult =  MessageBox.Show("Deseja Esconder?", "Hide me", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (ButtonsResult == DialogResult.Yes)
+            {
+                this.Hide();
+                notifyIcon1.Visible = true;
+            }
+        }
+
+
 
         private void listItens_DragDrop(object sender, DragEventArgs e)
         {
@@ -196,7 +207,7 @@ namespace LauncherDesktop
                 filename = arquivos.First();
 
             AddFile(filename);
-            change = true;
+            changueItens();
         }
 
         private void listItens_DragOver(object sender, DragEventArgs e)
@@ -312,16 +323,20 @@ namespace LauncherDesktop
         private void abrirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Run(false);
+            questionHide();
         }
 
         private void abrirComoAdmToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Run(true);
+            questionHide();
         }
 
         private void listitens_DoubleClick(object sender, EventArgs e)
         {
             Run(false);
+            questionHide();
+
         }
 
         private void limparListaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -370,6 +385,21 @@ namespace LauncherDesktop
         {
             if(Visible == true)
             { notifyIcon1.Visible = false; }
+        }
+
+        private void sobreToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Criado por Sr.Shadowy @2016 @2020 APP LAUNCHER Insparo e construido graças ao Smoll_iCe");
+        }
+
+        private void abrirListaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start(myFile);
+        }
+
+        private void salvarListaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveList();
         }
     }
 }

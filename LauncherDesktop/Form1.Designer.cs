@@ -55,6 +55,9 @@
             this.abrirLocalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.esconderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sobreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.abrirListaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.salvarListaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -62,7 +65,7 @@
             // notifyIcon1
             // 
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "notIcon";
+            this.notifyIcon1.Text = "Launcher Apps";
             this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
@@ -80,8 +83,11 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.abrirListaToolStripMenuItem,
             this.esconderToolStripMenuItem,
-            this.sairToolStripMenuItem});
+            this.salvarListaToolStripMenuItem,
+            this.sairToolStripMenuItem,
+            this.sobreToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -115,6 +121,7 @@
             this.listitens.HideSelection = false;
             this.listitens.LargeImageList = this.lista_icons;
             this.listitens.Location = new System.Drawing.Point(0, 24);
+            this.listitens.MultiSelect = false;
             this.listitens.Name = "listitens";
             this.listitens.Size = new System.Drawing.Size(342, 214);
             this.listitens.SmallImageList = this.lista_icons;
@@ -260,6 +267,27 @@
             this.esconderToolStripMenuItem.Text = "Esconder";
             this.esconderToolStripMenuItem.Click += new System.EventHandler(this.esconderToolStripMenuItem_Click);
             // 
+            // sobreToolStripMenuItem
+            // 
+            this.sobreToolStripMenuItem.Name = "sobreToolStripMenuItem";
+            this.sobreToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sobreToolStripMenuItem.Text = "Sobre";
+            this.sobreToolStripMenuItem.Click += new System.EventHandler(this.sobreToolStripMenuItem_Click);
+            // 
+            // abrirListaToolStripMenuItem
+            // 
+            this.abrirListaToolStripMenuItem.Name = "abrirListaToolStripMenuItem";
+            this.abrirListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.abrirListaToolStripMenuItem.Text = "Abrir Lista";
+            this.abrirListaToolStripMenuItem.Click += new System.EventHandler(this.abrirListaToolStripMenuItem_Click);
+            // 
+            // salvarListaToolStripMenuItem
+            // 
+            this.salvarListaToolStripMenuItem.Name = "salvarListaToolStripMenuItem";
+            this.salvarListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.salvarListaToolStripMenuItem.Text = "Salvar lista";
+            this.salvarListaToolStripMenuItem.Click += new System.EventHandler(this.salvarListaToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -308,6 +336,9 @@
         private System.Windows.Forms.ToolStripMenuItem abrirLocalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem esconderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sobreToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem abrirListaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem salvarListaToolStripMenuItem;
     }
 }
 
