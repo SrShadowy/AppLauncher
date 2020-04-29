@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using Microsoft.Win32;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LauncherDesktop
@@ -24,6 +21,8 @@ namespace LauncherDesktop
         string result = string.Empty;
         bool change = false;
         string myFile = Application.StartupPath + "\\lista.txt";
+        string Ver = "20.04.29";
+        string TitleProgram = string.Empty;
         public class IconExtractor
         {
             [DllImport("shell32.dll", EntryPoint = "ExtractIconEx")]
@@ -177,26 +176,61 @@ namespace LauncherDesktop
                         listitens.Items.Add(result, 0);
                         listitens.Items[listitens.Items.Count - 1].Group = listitens.Groups[1];
                     }
-                       
+
                 }
 
             }
         }
         void changueItens()
         {
-            this.Text = this.Text+ "*";
+            this.Text = TitleProgram + "*";
             change = true;
         }
         void questionHide()
         {
-          var ButtonsResult =  MessageBox.Show("Deseja Esconder?", "Hide me", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var ButtonsResult = MessageBox.Show("Deseja Esconder?", "Hide me", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (ButtonsResult == DialogResult.Yes)
             {
                 this.Hide();
                 notifyIcon1.Visible = true;
             }
         }
+        bool verChange()
+        {
+            WebRequest request = WebRequest.Create("https://github.com/SrShadowy/AppLauncher/tags");
+            WebResponse response = request.GetResponse();
 
+
+            using (Stream dataStream = response.GetResponseStream())
+            {
+                StreamReader reader = new StreamReader(dataStream);
+                string responseFromServer = reader.ReadToEnd();
+                string[] splitResponse = responseFromServer.Split('<');
+                string version;
+
+                foreach (string lines in splitResponse)
+                {
+                    if (lines.Contains(@"a href=""/SrShadowy/AppLauncher/releases/tag/"))
+                    {
+                        version = lines.Replace(@"a href=""/SrShadowy/AppLauncher/releases/tag/v", "");
+                        version = version.Remove(8);
+                        if (string.Compare(version, Ver) != 0)
+                        {
+                            return true;
+
+
+                        }
+                        break;
+
+                    }
+
+                }
+
+
+            }
+            return false;
+
+        }
 
 
         private void listItens_DragDrop(object sender, DragEventArgs e)
@@ -347,19 +381,27 @@ namespace LauncherDesktop
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            TitleProgram = this.Text + " v" + Ver;
+            this.Text = TitleProgram;
             loadFile();
+            inicializarComOOSToolStripMenuItem.Checked = Properties.Settings.Default.autoIni;
+           
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Properties.Settings.Default.Save();
             if (change)
             {
-                var ButtonResult =  MessageBox.Show("Existe alteração, deseja salvar?", "Alteração",
+                var ButtonResult = MessageBox.Show("Existe alteração, deseja salvar?", "Alteração",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
                 if (ButtonResult == DialogResult.Yes)
                     SaveList();
+              
             }
+           
         }
+       
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -378,19 +420,17 @@ namespace LauncherDesktop
             {
                 Show();
             }
-               
+
         }
 
         private void Form1_VisibleChanged(object sender, EventArgs e)
         {
-            if(Visible == true)
+            if (Visible == true)
             { notifyIcon1.Visible = false; }
         }
 
         private void sobreToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Criado por Sr.Shadowy @2016 @2020 APP LAUNCHER Insparo e construido graças ao Smoll_iCe");
-        }
+        { }
 
         private void abrirListaToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -400,6 +440,64 @@ namespace LauncherDesktop
         private void salvarListaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveList();
+        }
+
+        private void inicializarComOOSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (inicializarComOOSToolStripMenuItem.Checked)
+            {
+                try
+                {
+                    using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+                    {
+                        key.SetValue("LauncherApps", "\"" + Application.ExecutablePath + "\"");
+                        Properties.Settings.Default.autoIni = true;
+
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Não foi possivel adicionar tente novamente executando como administrador", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+            else
+            {
+                try
+                {
+                    using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+                    {
+                        key.DeleteValue("LauncherApps", false);
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
+        private void sobreToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            MessageBox.Show("\tCriado por Sr.Shadowy @2016 @2020" + Environment.NewLine +
+                "\t\tVer " + Ver + Environment.NewLine + "APP LAUNCHER inspirado e construido graças ao Smoll_iCe", "Sobre...");
+
+        }
+
+        private void verificarUpdateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (verChange())
+            {
+                var butonsResult = MessageBox.Show("Existe uma nova versão deseja baixar?", "Nova versão disponivel", MessageBoxButtons.YesNo);
+                if (butonsResult == DialogResult.Yes)
+                {
+                    Process.Start("https://github.com/SrShadowy/AppLauncher/releases");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Não foi possivel ou você está usando a versão atual.", "versão");
+            }
         }
     }
 }
