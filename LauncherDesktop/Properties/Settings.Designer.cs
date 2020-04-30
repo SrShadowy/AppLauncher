@@ -26,13 +26,26 @@ namespace LauncherDesktop.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public bool autoIni {
             get {
                 return ((bool)(this["autoIni"]));
             }
             set {
                 this["autoIni"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
+            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
+            "tring>\'\'</string>\r\n</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection grupos {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["grupos"]));
+            }
+            set {
+                this["grupos"] = value;
             }
         }
     }
