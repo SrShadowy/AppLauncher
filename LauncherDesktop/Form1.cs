@@ -21,11 +21,12 @@ namespace LauncherDesktop
         readonly ListBox mylist = new ListBox();
         readonly ListBox ConfigGroups = new ListBox();
         readonly ListBox ConfigAdmin = new ListBox();
+        public string NewVersion = string.Empty;
 
         string result = string.Empty;
         bool change = false;
         readonly string myFile = Application.StartupPath + "\\lista.txt";
-        readonly string Ver = "20.04.30";
+        readonly string Ver = "20.04.31";
         string TitleProgram = string.Empty;
         bool question = false;
         public class IconExtractor
@@ -332,7 +333,6 @@ namespace LauncherDesktop
             }
 
         }
-
         void ChangueItens()
         {
             this.Text = TitleProgram + "*";
@@ -377,6 +377,7 @@ namespace LauncherDesktop
                         version = version.Remove(8);
                         if (string.Compare(version, Ver) != 0)
                         {
+                            NewVersion = version;
                             return true;
 
 
@@ -586,7 +587,6 @@ namespace LauncherDesktop
 
         }
 
-
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Show();
@@ -670,7 +670,10 @@ namespace LauncherDesktop
                 var butonsResult = MessageBox.Show("Existe uma nova versão deseja baixar?", "Nova versão disponivel", MessageBoxButtons.YesNo);
                 if (butonsResult == DialogResult.Yes)
                 {
-                    Process.Start("https://github.com/SrShadowy/AppLauncher/releases");
+                    DownloadForm dld = new DownloadForm(this);
+                    dld.Show();
+
+                    
                 }
             }
             else
@@ -713,7 +716,6 @@ namespace LauncherDesktop
                 Properties.Settings.Default.Save();
             }
         }
-
         private void MoverParaOGrupoToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             int index = moverParaOGrupoToolStripMenuItem.DropDown.Items.IndexOf(e.ClickedItem);
