@@ -17,16 +17,79 @@ namespace LauncherDesktop
             InitializeComponent();
         }
 
+        //Change COLOR ListViewGroup Header
+
+            // né class api
+        public class ListViewAPI
+        {
+            public const int LVM_FIRST = 4096;
+            public const int LVM_SETGROUPMETRICS = (LVM_FIRST + 155);
+            public const int LVGMF_NONE = 0;
+            public const int LVGMF_BORDERSIZE = 1;
+            public const int lVGMF_BORDERCOLOR = 2;
+            public const int LVGMF_TEXTCOLOR = 0x4;
+
+          
+
+
+
+
+            //import SendMessage
+            [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);
+
+        //Layout Senquencia crHeader
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct LVGROUPMETRICS
+        {
+            public int cbSize;
+            public int mask;
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
+            public int crLeft;
+            public int crTop;
+            public int crRight;
+            public int crBottom;
+            public int crHeader;
+            public int crFooter;
+            }
+
+        public static void SetGroupHeaderColor(IntPtr handle, int icolor)
+        {
+            var groupMetrics = new LVGROUPMETRICS();
+            Int32 ptrRetVal;
+            IntPtr wparam = new IntPtr();
+            IntPtr lparam = new IntPtr();
+
+            groupMetrics.cbSize = Marshal.SizeOf(groupMetrics);
+            groupMetrics.mask = ListViewAPI.LVGMF_TEXTCOLOR;
+            groupMetrics.crHeader = icolor;
+
+            lparam = System.Runtime.InteropServices.Marshal.AllocCoTaskMem(System.Runtime.InteropServices.Marshal.SizeOf(groupMetrics));
+            System.Runtime.InteropServices.Marshal.StructureToPtr(groupMetrics, lparam, false);
+
+            ptrRetVal = SendMessage(handle, LVM_SETGROUPMETRICS, wparam, lparam);
+
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(lparam);
+        }
+
+        }
+
         //Global vars
         readonly ListBox mylist = new ListBox();
         readonly ListBox ConfigGroups = new ListBox();
         readonly ListBox ConfigAdmin = new ListBox();
+        readonly ListBox MyGroups = new ListBox();
+
+
         public string NewVersion = string.Empty;
 
         string result = string.Empty;
         bool change = false;
-        readonly string myFile = Application.StartupPath + "\\lista.txt";
-        readonly string Ver = "20.04.31";
+        readonly string myFile = Application.StartupPath + "\\DATA.bin";
+        readonly string Ver = "20.05.03";
         string TitleProgram = string.Empty;
         bool question = false;
         public class IconExtractor
@@ -132,33 +195,19 @@ namespace LauncherDesktop
             return dialogResult;
         }
 
-
         void AddFile(string filename)
         {
             string type = Path.GetExtension(filename);
             result = Path.GetFileNameWithoutExtension(filename);
             mylist.Items.Add(filename);
-            if (type == ".exe")
-            {
+            try 
+            { 
                 Icon largeIcon = IconExtractor.ExtractIconLarge(filename);
                 lista_icons.Images.Add(largeIcon.ToBitmap());
                 listitens.Items.Add(result, lista_icons.Images.Count - 1);
-                try
-                {
-                    listitens.Items[listitens.Items.Count - 1].Group = listitens.Groups[0];
-                }
-                catch{ }
+            }
+            catch{ listitens.Items.Add(result, 0); }
                 
-            }
-            else
-            {
-                listitens.Items.Add(result, 0);
-                try
-                {
-                    listitens.Items[listitens.Items.Count - 1].Group = listitens.Groups[1];
-                }
-                catch { }
-            }
 
         }
         void OpenDirFile()
@@ -191,7 +240,7 @@ namespace LauncherDesktop
             {
                 // Sem permissao
             }
-        }
+        }   
         void Remove()
         {
             try
@@ -219,7 +268,7 @@ namespace LauncherDesktop
                 cm_itens.Items.RemoveAt(val);
 
             }
-            catch { MessageBox.Show("Erro ao remover", "Nada selecionado eu acho"); }
+            catch { }
         }
         void ClearAll()
         {
@@ -233,33 +282,26 @@ namespace LauncherDesktop
         {
             Properties.Settings.Default.Save();
             System.IO.File.WriteAllLines(myFile, mylist.Items.OfType<string>().ToArray());
-            System.IO.File.AppendAllLines(myFile, ConfigGroups.Items.OfType<string>().ToArray());
+            System.IO.File.AppendAllLines(myFile, MyGroups.Items.OfType<string>().ToArray());
             System.IO.File.AppendAllLines(myFile, ConfigAdmin.Items.OfType<string>().ToArray());
+            System.IO.File.AppendAllLines(myFile, ConfigGroups.Items.OfType<string>().ToArray());
+
             this.Text = TitleProgram;
             change = false;
         }
         void LoadFile(string myFile)
         {
-            //Groups saves
-            _ = ConfigGroups.Items.Add("<GROUPS>");
-            _ = ConfigAdmin.Items.Add("<CONFIG>");
-            foreach (string header in Properties.Settings.Default.grupos)
-            {
-                if (string.Compare(header, "''") != 0)
-                {
-                        ListViewGroup newgroups = new ListViewGroup
-                        {
-                            Header = header,
-                            HeaderAlignment = HorizontalAlignment.Center
-                        };
-                        listitens.Groups.Add(newgroups);
-                    (cms_viewer.Items[4] as ToolStripMenuItem).DropDownItems.Add(header);
-                     removerGrupoToolStripMenuItem.DropDownItems.Add(header);
-                }
-            }
+          
+            //conditions save
+            _ = ConfigGroups.Items.Add("<ITENS_G>");
+            _ = ConfigAdmin.Items.Add("<ITENS_C>");
+            _ = MyGroups.Items.Add("<GROUPS>");
+
 
             if (File.Exists(myFile))
             {
+                bool config_itens = false;
+                bool AD_Groups = false;
                 bool groups = false;
                 bool admins = false;
                 string[] lines = System.IO.File.ReadAllLines(myFile);
@@ -267,11 +309,18 @@ namespace LauncherDesktop
                 {
                     if (string.Compare(lines[i], "<GROUPS>") == 0)
                     {
-                        groups = true;
+                        AD_Groups = true;
                         continue;
                     }
-                    if (string.Compare(lines[i], "<CONFIG>") == 0)
+                    if (string.Compare(lines[i], "<ITENS_G>") == 0)
                     {
+                        groups = true;
+                        AD_Groups = false;
+                        continue;
+                    }
+                    if (string.Compare(lines[i], "<ITENS_C>") == 0)
+                    {
+                        AD_Groups = false;
                         groups = false;
                         admins = true;
                         continue;
@@ -279,27 +328,56 @@ namespace LauncherDesktop
                     if ((string.Compare(lines[i], string.Empty) == 0))
                         continue;
 
-                    if (!groups && !admins)
+                    if (!groups && !admins && !AD_Groups && !config_itens)
                     {
                         mylist.Items.Add(lines[i]);
                         string type = Path.GetExtension(lines[i]);
                         result = Path.GetFileNameWithoutExtension(lines[i]);
-                        if (type == ".exe" || type == ".EXE")
+                        try
                         {
-                            Icon largeIcon = IconExtractor.ExtractIconLarge(lines[i]);
-                            lista_icons.Images.Add(largeIcon.ToBitmap());
-                            listitens.Items.Add(result, (lista_icons.Images.Count - 1));                           
-                            cm_itens.Items.Add(result, lista_icons.Images[lista_icons.Images.Count - 1]);
+                                Icon largeIcon = IconExtractor.ExtractIconLarge(lines[i]);
+                                lista_icons.Images.Add(largeIcon.ToBitmap());
+                                listitens.Items.Add(result, (lista_icons.Images.Count - 1));
+                                cm_itens.Items.Add(result, lista_icons.Images[lista_icons.Images.Count - 1]);
+
                         }
-                        else
+                        catch
                         {
                             listitens.Items.Add(result, 0);
                             cm_itens.Items.Add(result, lista_icons.Images[0]);
                         }
 
+
+                        
+                       
+
+                    }
+                    else if (AD_Groups)
+                    {
+                        string header = lines[i];
+                        if (string.Compare(header, "''") != 0)
+                        {
+
+                            // txt 230, 240, 250
+                      
+                            ListViewGroup newgroups = new ListViewGroup
+                            {
+                                Header = header,
+                                HeaderAlignment = HorizontalAlignment.Center
+                               
+                                
+                            };
+                            
+
+                            MyGroups.Items.Add(header);
+                            listitens.Groups.Add(newgroups);
+                            (cms_viewer.Items[4] as ToolStripMenuItem).DropDownItems.Add(header);
+                            removerGrupoToolStripMenuItem.DropDownItems.Add(header);
+                        }
                     }
                     else if (groups)
                     {
+                        ListViewAPI.SetGroupHeaderColor(listitens.Handle, 0xC00056);
                         try
                         {
                             string[] file_groups = new string[2];
@@ -308,7 +386,9 @@ namespace LauncherDesktop
                             for (int x = 0; x < listitens.Groups.Count; ++x)
                             {
                                 if (string.Compare(listitens.Groups[x].Header, file_groups[1]) == 0)
-                                    listitens.Items[Convert.ToInt32(file_groups[0])].Group = listitens.Groups[x];
+                                 listitens.Items[listitens.Items.IndexOf(listitens.FindItemWithText(file_groups[0]))].Group
+                                        = listitens.Groups[x];
+                                   
                             }  
                         }catch
                         { }
@@ -321,8 +401,10 @@ namespace LauncherDesktop
                             string[] file_admin = new string[2];
                             ConfigAdmin.Items.Add(lines[i]);
                             file_admin = lines[i].Split(':');
-                            listitens.Items[Convert.ToInt32(file_admin[0])].ForeColor = Color.Green;
-                            listitens.Items[Convert.ToInt32(file_admin[0])].Checked = true;
+                            listitens.Items[listitens.Items.IndexOf(
+                                listitens.FindItemWithText(file_admin[0]))].ForeColor = Color.Green;
+                            listitens.Items[listitens.Items.IndexOf(
+                                listitens.FindItemWithText(file_admin[0]))].Checked = true;
 
                         }
                         catch
@@ -375,14 +457,21 @@ namespace LauncherDesktop
                     {
                         version = lines.Replace(@"a href=""/SrShadowy/AppLauncher/releases/tag/v", "");
                         version = version.Remove(8);
-                        if (string.Compare(version, Ver) != 0)
+                        if (string.Compare(version, Ver) == 0)
                         {
                             NewVersion = version;
-                            return true;
+                            return false;
+                           
 
 
                         }
-                        break;
+                        else if (string.Compare(version, Ver) != 0)
+                        {   
+                            NewVersion = version;
+                            return true;
+                
+                        }
+                           
 
                     }
 
@@ -395,28 +484,29 @@ namespace LauncherDesktop
         }
         void ChangeGroup(string newGroup)
         {
-            int Number = ConfigGroups.FindString(newGroup[0].ToString());
-            if (Number > 0)
-            {
-                ConfigGroups.Items.RemoveAt(Number);
-            }
+            var itemIndex = listitens.Items.IndexOf(listitens.SelectedItems[0]);
+            int removeAt = ConfigGroups.FindString(listitens.Items[itemIndex].Text);
+            if (removeAt > 0)
+                ConfigGroups.Items.RemoveAt(removeAt);
+
             ConfigGroups.Items.Add(newGroup);
         }
+
         void RemoveGroup(int index)
         {
             for (int x = 0; x < listitens.Groups.Count; ++x)
             {
-                if (string.Compare(listitens.Groups[x].Header, Properties.Settings.Default.grupos[index]) == 0)
+                MessageBox.Show(MyGroups.Items[index+1].ToString());
+                if (string.Compare(listitens.Groups[x].Header, MyGroups.Items[index+1].ToString()) == 0)
                 {
+
                     listitens.Groups.RemoveAt(x);
                     break;
                 }
-
             }
-            Properties.Settings.Default.grupos.RemoveAt(index); 
+            MyGroups.Items.RemoveAt(index+1);
             moverParaOGrupoToolStripMenuItem.DropDownItems.RemoveAt(index);
             removerGrupoToolStripMenuItem.DropDownItems.RemoveAt(index);
-            Properties.Settings.Default.Save();
         }
 
         //LIST 
@@ -566,11 +656,11 @@ namespace LauncherDesktop
             this.Text = TitleProgram;
 
             LoadFile(myFile);
-
-           
-            inicializarComOOSToolStripMenuItem.Checked = Properties.Settings.Default.autoIni;
-
-
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+            {
+                var kaka = key.GetValue("LauncherApps");
+                inicializarComOOSToolStripMenuItem.Checked = (kaka != null);
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -616,7 +706,7 @@ namespace LauncherDesktop
         private void AbrirListaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (File.Exists(myFile))
-                Process.Start(myFile);
+                Process.Start("notepad", myFile);
         }
 
         private void SalvarListaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -632,7 +722,7 @@ namespace LauncherDesktop
                     using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
                     {
                         key.SetValue("LauncherApps", "\"" + Application.ExecutablePath + "\"");
-                        Properties.Settings.Default.autoIni = true;
+                        //Properties.Settings.Default.autoIni = true;
 
                     }
                 }
@@ -670,10 +760,21 @@ namespace LauncherDesktop
                 var butonsResult = MessageBox.Show("Existe uma nova versão deseja baixar?", "Nova versão disponivel", MessageBoxButtons.YesNo);
                 if (butonsResult == DialogResult.Yes)
                 {
-                    DownloadForm dld = new DownloadForm(this);
-                    dld.Show();
-
-                    
+                    File.WriteAllText("dat.bin",NewVersion + Environment.NewLine + Ver);
+                    if (File.Exists("update.exe"))
+                    {
+                    var processInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "update.exe",
+                        UseShellExecute = true,
+                        Verb = "runas",
+                        Arguments = Ver
+                    };
+                    Process.Start(processInfo);
+                    }else
+                    {
+                        Process.Start("https://github.com/SrShadowy/AppLauncher/releases/");
+                    }
                 }
             }
             else
@@ -712,8 +813,8 @@ namespace LauncherDesktop
                 NewGroup.HeaderAlignment = HorizontalAlignment.Center;
                 listitens.Groups.Add(NewGroup);
                 (cms_viewer.Items[4] as ToolStripMenuItem).DropDownItems.Add(listitens.Groups[listitens.Groups.Count - 1].Header);
-                Properties.Settings.Default.grupos.Add(x);
-                Properties.Settings.Default.Save();
+                MyGroups.Items.Add(x);
+                ChangueItens();
             }
         }
         private void MoverParaOGrupoToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -721,7 +822,7 @@ namespace LauncherDesktop
             int index = moverParaOGrupoToolStripMenuItem.DropDown.Items.IndexOf(e.ClickedItem);
             var itemIndex = listitens.Items.IndexOf(listitens.SelectedItems[0]);
             listitens.Items[itemIndex].Group = listitens.Groups[index];
-            string newGroup = itemIndex + ":" + listitens.Groups[index];
+            string newGroup = listitens.Items[itemIndex].Text + ":" + listitens.Groups[index];
             ChangeGroup(newGroup);
             ChangueItens();
         }
@@ -736,13 +837,19 @@ namespace LauncherDesktop
             if (diagResult == DialogResult.Yes)
                 RemoveGroup(indx);
 
+            ChangueItens();
+
         }
 
         private void DefinirComoADMINToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var itemIndex = listitens.Items.IndexOf(listitens.SelectedItems[0]);
             listitens.Items[itemIndex].Checked = !listitens.Items[itemIndex].Checked;
-            ConfigAdmin.Items.Add(itemIndex + ":" + Convert.ToInt32( listitens.Items[itemIndex].Checked));
+            int removeAt = ConfigAdmin.FindString(listitens.Items[itemIndex].Text);
+            if (removeAt > 0)
+                ConfigAdmin.Items.RemoveAt(removeAt);
+
+            ConfigAdmin.Items.Add(listitens.Items[itemIndex].Text + ":" + Convert.ToInt32( listitens.Items[itemIndex].Checked));
             ChangueItens();
             if (listitens.Items[itemIndex].Checked)
                 listitens.Items[itemIndex].ForeColor = Color.Red;
@@ -769,5 +876,6 @@ namespace LauncherDesktop
             }
             
         }
+
     }
 }
