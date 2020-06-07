@@ -17,66 +17,7 @@ namespace LauncherDesktop
             InitializeComponent();
         }
 
-        //Change COLOR ListViewGroup Header
-
-            // né class api
-        public class ListViewAPI
-        {
-            public const int LVM_FIRST = 4096;
-            public const int LVM_SETGROUPMETRICS = (LVM_FIRST + 155);
-            public const int LVGMF_NONE = 0;
-            public const int LVGMF_BORDERSIZE = 1;
-            public const int lVGMF_BORDERCOLOR = 2;
-            public const int LVGMF_TEXTCOLOR = 0x4;
-
-          
-
-
-
-
-            //import SendMessage
-            [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);
-
-        //Layout Senquencia crHeader
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct LVGROUPMETRICS
-        {
-            public int cbSize;
-            public int mask;
-            public int left;
-            public int top;
-            public int right;
-            public int bottom;
-            public int crLeft;
-            public int crTop;
-            public int crRight;
-            public int crBottom;
-            public int crHeader;
-            public int crFooter;
-            }
-
-        public static void SetGroupHeaderColor(IntPtr handle, int icolor)
-        {
-            var groupMetrics = new LVGROUPMETRICS();
-            Int32 ptrRetVal;
-            IntPtr wparam = new IntPtr();
-            IntPtr lparam = new IntPtr();
-
-            groupMetrics.cbSize = Marshal.SizeOf(groupMetrics);
-            groupMetrics.mask = ListViewAPI.LVGMF_TEXTCOLOR;
-            groupMetrics.crHeader = icolor;
-
-            lparam = System.Runtime.InteropServices.Marshal.AllocCoTaskMem(System.Runtime.InteropServices.Marshal.SizeOf(groupMetrics));
-            System.Runtime.InteropServices.Marshal.StructureToPtr(groupMetrics, lparam, false);
-
-            ptrRetVal = SendMessage(handle, LVM_SETGROUPMETRICS, wparam, lparam);
-
-            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(lparam);
-        }
-
-        }
-
+        
         //Global vars
         readonly ListBox mylist = new ListBox();
         readonly ListBox ConfigGroups = new ListBox();
@@ -89,7 +30,7 @@ namespace LauncherDesktop
         string result = string.Empty;
         bool change = false;
         readonly string myFile = Application.StartupPath + "\\DATA.bin";
-        readonly string Ver = "20.05.03";
+        readonly string Ver = "20.06.07";
         string TitleProgram = string.Empty;
         bool question = false;
         public class IconExtractor
@@ -197,7 +138,7 @@ namespace LauncherDesktop
 
         void AddFile(string filename)
         {
-            string type = Path.GetExtension(filename);
+            //string type = Path.GetExtension(filename);
             result = Path.GetFileNameWithoutExtension(filename);
             mylist.Items.Add(filename);
             try 
@@ -331,7 +272,7 @@ namespace LauncherDesktop
                     if (!groups && !admins && !AD_Groups && !config_itens)
                     {
                         mylist.Items.Add(lines[i]);
-                        string type = Path.GetExtension(lines[i]);
+                        //string type = Path.GetExtension(lines[i]);
                         result = Path.GetFileNameWithoutExtension(lines[i]);
                         try
                         {
@@ -346,11 +287,7 @@ namespace LauncherDesktop
                             listitens.Items.Add(result, 0);
                             cm_itens.Items.Add(result, lista_icons.Images[0]);
                         }
-
-
-                        
                        
-
                     }
                     else if (AD_Groups)
                     {
@@ -377,7 +314,6 @@ namespace LauncherDesktop
                     }
                     else if (groups)
                     {
-                        ListViewAPI.SetGroupHeaderColor(listitens.Handle, 0xC00056);
                         try
                         {
                             string[] file_groups = new string[2];
@@ -387,7 +323,7 @@ namespace LauncherDesktop
                             {
                                 if (string.Compare(listitens.Groups[x].Header, file_groups[1]) == 0)
                                  listitens.Items[listitens.Items.IndexOf(listitens.FindItemWithText(file_groups[0]))].Group
-                                        = listitens.Groups[x];
+                                 = listitens.Groups[x];
                                    
                             }  
                         }catch
@@ -413,6 +349,7 @@ namespace LauncherDesktop
                     }
                 }
             }
+            cm_itens.Items.Add("Sair");
 
         }
         void ChangueItens()
@@ -658,8 +595,8 @@ namespace LauncherDesktop
             LoadFile(myFile);
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
             {
-                var kaka = key.GetValue("LauncherApps");
-                inicializarComOOSToolStripMenuItem.Checked = (kaka != null);
+                var KeyOsInicialization = key.GetValue("LauncherApps");
+                inicializarComOOSToolStripMenuItem.Checked = (KeyOsInicialization != null);
             }
         }
 
@@ -686,6 +623,8 @@ namespace LauncherDesktop
         {
             Hide();
             notifyIcon1.Visible = true;
+            notifyIcon1.BalloonTipText = "Estamos aqui na barra basta clica para abrir novamente :)";
+            notifyIcon1.ShowBalloonTip(1000);
         }
 
         private void NotifyIcon1_MouseClick(object sender, MouseEventArgs e)
@@ -722,8 +661,6 @@ namespace LauncherDesktop
                     using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
                     {
                         key.SetValue("LauncherApps", "\"" + Application.ExecutablePath + "\"");
-                        //Properties.Settings.Default.autoIni = true;
-
                     }
                 }
                 catch
@@ -784,20 +721,25 @@ namespace LauncherDesktop
         }
         private void Cm_itens_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            int index = cm_itens.Items.IndexOf(e.ClickedItem);
-            // MessageBox.Show(e.ClickedItem.Text + " " + index);
-            listitens.Items[index].Selected = true;
-            Run(false);
-
+            if (String.Compare("Sair", e.ClickedItem.Text) == 0)
+            {
+                Close();
+            }else
+            {
+                int index = cm_itens.Items.IndexOf(e.ClickedItem);
+                // MessageBox.Show(e.ClickedItem.Text + " " + index);
+                listitens.Items[index].Selected = true;
+                Run(false);
+            }
         }
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
             if (WindowState == FormWindowState.Minimized)
             {
-                Hide();
-                notifyIcon1.Visible = true;
-                notifyIcon1.BalloonTipText = "Estamos aqui na barra basta clica para abrir novamente :)";
-                notifyIcon1.ShowBalloonTip(1000);
+                // Hide();
+                //notifyIcon1.Visible = true;
+                //notifyIcon1.BalloonTipText = "Estamos aqui na barra basta clica para abrir novamente :)";
+                //notifyIcon1.ShowBalloonTip(1000);
             }
         }
         private void AdicionarGrupoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -849,7 +791,9 @@ namespace LauncherDesktop
             if (removeAt > 0)
                 ConfigAdmin.Items.RemoveAt(removeAt);
 
-            ConfigAdmin.Items.Add(listitens.Items[itemIndex].Text + ":" + Convert.ToInt32( listitens.Items[itemIndex].Checked));
+            if (listitens.Items[itemIndex].Checked)
+                ConfigAdmin.Items.Add(listitens.Items[itemIndex].Text + ":" + Convert.ToInt32( listitens.Items[itemIndex].Checked));
+
             ChangueItens();
             if (listitens.Items[itemIndex].Checked)
                 listitens.Items[itemIndex].ForeColor = Color.Red;

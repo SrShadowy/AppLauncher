@@ -65,6 +65,7 @@
             this.removerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moverParaOGrupoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.definirComoADMINToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.cms_viewer.SuspendLayout();
             this.SuspendLayout();
@@ -82,7 +83,7 @@
             // 
             this.cm_itens.Name = "cm_itens";
             this.cm_itens.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.cm_itens.Size = new System.Drawing.Size(61, 4);
+            this.cm_itens.Size = new System.Drawing.Size(181, 26);
             this.cm_itens.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.Cm_itens_ItemClicked);
             // 
             // menuStrip1
@@ -114,35 +115,35 @@
             // abrirListaToolStripMenuItem
             // 
             this.abrirListaToolStripMenuItem.Name = "abrirListaToolStripMenuItem";
-            this.abrirListaToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.abrirListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.abrirListaToolStripMenuItem.Text = "Abrir Lista";
             this.abrirListaToolStripMenuItem.Click += new System.EventHandler(this.AbrirListaToolStripMenuItem_Click);
             // 
             // importaListaToolStripMenuItem
             // 
             this.importaListaToolStripMenuItem.Name = "importaListaToolStripMenuItem";
-            this.importaListaToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.importaListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.importaListaToolStripMenuItem.Text = "Importa lista";
             this.importaListaToolStripMenuItem.Click += new System.EventHandler(this.ImportaListaToolStripMenuItem_Click);
             // 
             // esconderToolStripMenuItem
             // 
             this.esconderToolStripMenuItem.Name = "esconderToolStripMenuItem";
-            this.esconderToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.esconderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.esconderToolStripMenuItem.Text = "Esconder";
             this.esconderToolStripMenuItem.Click += new System.EventHandler(this.EsconderToolStripMenuItem_Click);
             // 
             // salvarListaToolStripMenuItem
             // 
             this.salvarListaToolStripMenuItem.Name = "salvarListaToolStripMenuItem";
-            this.salvarListaToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.salvarListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.salvarListaToolStripMenuItem.Text = "Salvar lista";
             this.salvarListaToolStripMenuItem.Click += new System.EventHandler(this.SalvarListaToolStripMenuItem_Click);
             // 
             // sairToolStripMenuItem
             // 
             this.sairToolStripMenuItem.Name = "sairToolStripMenuItem";
-            this.sairToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.sairToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sairToolStripMenuItem.Text = "Sair";
             this.sairToolStripMenuItem.Click += new System.EventHandler(this.SairToolStripMenuItem_Click);
             // 
@@ -367,6 +368,12 @@
             this.definirComoADMINToolStripMenuItem.Text = "Definir como ADMIN";
             this.definirComoADMINToolStripMenuItem.Click += new System.EventHandler(this.DefinirComoADMINToolStripMenuItem_Click);
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem1.Text = "Exit";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -429,6 +436,7 @@
         private System.Windows.Forms.ToolStripMenuItem definirComoADMINToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem escondeAoAbrirAlgoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importaListaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }
 
