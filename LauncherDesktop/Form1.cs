@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace LauncherDesktop
@@ -25,14 +26,15 @@ namespace LauncherDesktop
         readonly ListBox MyGroups = new ListBox();
 
 
-        public string NewVersion = string.Empty;
 
-        string result = string.Empty;
         bool change = false;
-        readonly string myFile = Application.StartupPath + "\\DATA.bin";
-        readonly string Ver = "20.06.07";
+        string result = string.Empty;
         string TitleProgram = string.Empty;
         bool question = false;
+        readonly string myFile = Application.StartupPath + "\\DATA.bin";
+        readonly string Ver = "20.06.12";
+        public string NewVersion = string.Empty;                    
+
         public class IconExtractor
         {
             [DllImport("shell32.dll", EntryPoint = "ExtractIconEx")]
@@ -136,9 +138,10 @@ namespace LauncherDesktop
             return dialogResult;
         }
 
+        //Functions
         void AddFile(string filename)
         {
-            //string type = Path.GetExtension(filename);
+
             result = Path.GetFileNameWithoutExtension(filename);
             mylist.Items.Add(filename);
             try 
@@ -233,7 +236,7 @@ namespace LauncherDesktop
         void LoadFile(string myFile)
         {
           
-            //conditions save
+            //Saves
             _ = ConfigGroups.Items.Add("<ITENS_G>");
             _ = ConfigAdmin.Items.Add("<ITENS_C>");
             _ = MyGroups.Items.Add("<GROUPS>");
@@ -271,45 +274,46 @@ namespace LauncherDesktop
 
                     if (!groups && !admins && !AD_Groups && !config_itens)
                     {
+                        string[] FileAndIconEx = lines[i].Split(';');
                         mylist.Items.Add(lines[i]);
-                        //string type = Path.GetExtension(lines[i]);
-                        result = Path.GetFileNameWithoutExtension(lines[i]);
-                        try
-                        {
-                                Icon largeIcon = IconExtractor.ExtractIconLarge(lines[i]);
-                                lista_icons.Images.Add(largeIcon.ToBitmap());
-                                listitens.Items.Add(result, (lista_icons.Images.Count - 1));
-                                cm_itens.Items.Add(result, lista_icons.Images[lista_icons.Images.Count - 1]);
+                        Icon largeIcon = null;
+                        result = Path.GetFileNameWithoutExtension(FileAndIconEx[0]);
 
-                        }
-                        catch
+                        if (FileAndIconEx.Length > 1)
+                            largeIcon = IconExtractor.ExtractIconLarge(FileAndIconEx[1]);
+                        else
+                            largeIcon = IconExtractor.ExtractIconLarge(lines[i]);
+
+                        if (largeIcon != null)
                         {
+                            lista_icons.Images.Add(largeIcon.ToBitmap());
+                            listitens.Items.Add(result, (lista_icons.Images.Count - 1));
+                        }else
                             listitens.Items.Add(result, 0);
-                            cm_itens.Items.Add(result, lista_icons.Images[0]);
-                        }
-                       
+
+
                     }
                     else if (AD_Groups)
                     {
                         string header = lines[i];
                         if (string.Compare(header, "''") != 0)
                         {
-
-                            // txt 230, 240, 250
-                      
+    
                             ListViewGroup newgroups = new ListViewGroup
                             {
                                 Header = header,
                                 HeaderAlignment = HorizontalAlignment.Center
-                               
-                                
                             };
-                            
 
                             MyGroups.Items.Add(header);
                             listitens.Groups.Add(newgroups);
                             (cms_viewer.Items[4] as ToolStripMenuItem).DropDownItems.Add(header);
                             removerGrupoToolStripMenuItem.DropDownItems.Add(header);
+
+                            /* ADD ON CONTEXT MENU GROUPS AND FUNCTION */
+                            cm_itens.Items.Add(header);
+                            (cm_itens.Items[cm_itens.Items.Count -1] as ToolStripMenuItem).DropDownItemClicked += cm_itemsDropItems;
+
                         }
                     }
                     else if (groups)
@@ -322,9 +326,14 @@ namespace LauncherDesktop
                             for (int x = 0; x < listitens.Groups.Count; ++x)
                             {
                                 if (string.Compare(listitens.Groups[x].Header, file_groups[1]) == 0)
-                                 listitens.Items[listitens.Items.IndexOf(listitens.FindItemWithText(file_groups[0]))].Group
-                                 = listitens.Groups[x];
-                                   
+                                {
+                                    int ItemTextIndex = listitens.Items.IndexOf(listitens.FindItemWithText(file_groups[0]));
+                                    listitens.Items[ItemTextIndex].Group = listitens.Groups[x];
+
+                                    /* ADD ON CONTEXT GROUPS ITEMS */
+                                    (cm_itens.Items[x] as ToolStripMenuItem).DropDownItems.Add(file_groups[0],
+                                        lista_icons.Images[listitens.Items[ItemTextIndex].ImageIndex]);
+                                }
                             }  
                         }catch
                         { }
@@ -347,10 +356,31 @@ namespace LauncherDesktop
                         { }
 
                     }
+                    
+                   
                 }
             }
-            cm_itens.Items.Add("Sair");
 
+            bool dft = true;
+            for(int itemIndex = 0; itemIndex < listitens.Items.Count; ++itemIndex)
+            {
+                if (listitens.Items[itemIndex].Group == null)
+                {
+                    //if exit default add
+                    if(dft)
+                    {
+                        dft = false;
+                        cm_itens.Items.Add("Default");
+                    }
+                    // add itens on default
+                    (cm_itens.Items[cm_itens.Items.Count-1] as ToolStripMenuItem).DropDownItems.Add(listitens.Items[itemIndex].Text,
+                                        lista_icons.Images[listitens.Items[itemIndex].ImageIndex]);
+                }
+
+            }
+
+            cm_itens.Items.Add("Sair");
+            
         }
         void ChangueItens()
         {
@@ -398,9 +428,6 @@ namespace LauncherDesktop
                         {
                             NewVersion = version;
                             return false;
-                           
-
-
                         }
                         else if (string.Compare(version, Ver) != 0)
                         {   
@@ -408,10 +435,7 @@ namespace LauncherDesktop
                             return true;
                 
                         }
-                           
-
                     }
-
                 }
 
 
@@ -422,13 +446,13 @@ namespace LauncherDesktop
         void ChangeGroup(string newGroup)
         {
             var itemIndex = listitens.Items.IndexOf(listitens.SelectedItems[0]);
-            int removeAt = ConfigGroups.FindString(listitens.Items[itemIndex].Text);
+            int removeAt = ConfigGroups.FindStringExact(listitens.Items[itemIndex].Text);
             if (removeAt > 0)
+            {
                 ConfigGroups.Items.RemoveAt(removeAt);
-
+            }
             ConfigGroups.Items.Add(newGroup);
         }
-
         void RemoveGroup(int index)
         {
             for (int x = 0; x < listitens.Groups.Count; ++x)
@@ -436,7 +460,6 @@ namespace LauncherDesktop
                 MessageBox.Show(MyGroups.Items[index+1].ToString());
                 if (string.Compare(listitens.Groups[x].Header, MyGroups.Items[index+1].ToString()) == 0)
                 {
-
                     listitens.Groups.RemoveAt(x);
                     break;
                 }
@@ -446,7 +469,22 @@ namespace LauncherDesktop
             removerGrupoToolStripMenuItem.DropDownItems.RemoveAt(index);
         }
 
-        //LIST 
+
+        // ***** ANYWAY FUNCTIONS ************
+        DateTime _lastCheckTime = DateTime.Now;
+        double _frameCount = 0;
+        // called every once in a while
+        double GetFps()
+        {
+            double secondsElapsed = (DateTime.Now - _lastCheckTime).TotalSeconds;
+            double count          = Interlocked.Exchange(ref _frameCount, 10);
+            double fps            = count / secondsElapsed;
+            _lastCheckTime        = DateTime.Now;
+            return fps;
+        }
+
+
+        //Lists
         private void ListItens_DragDrop(object sender, DragEventArgs e)
         {
             string filename = string.Empty;
@@ -524,7 +562,7 @@ namespace LauncherDesktop
             }
         }
 
-        //Tipos de lista
+        //types of list
         private void SmallIconsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             listitens.View = View.LargeIcon;
@@ -592,6 +630,20 @@ namespace LauncherDesktop
             TitleProgram = this.Text + " v" + Ver;
             this.Text = TitleProgram;
 
+            //Joken
+            if ( DateTime.Today.Day == 1 && DateTime.Today.Month == 4)
+            {
+                MessageBox.Show("Sua licença fico obsoleta porfavor atualize a licença do nosso programa", "licença expirou",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string key = string.Empty;
+               DialogResult Resolt = InputBox("INSIRA A KEY", "Insira o codigo da key:",ref key);
+                if (Resolt == DialogResult.OK)
+                {
+                    MessageBox.Show("LICENÇA INVALIDA!");
+                }
+                this.Text += " =*EXPIRADO!*= ";
+            }
+                
             LoadFile(myFile);
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
             {
@@ -616,7 +668,10 @@ namespace LauncherDesktop
 
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            Show();
+            ShowDialog();
+            WindowState = FormWindowState.Normal ;
+            Focus();
+            
         }
 
         private void EsconderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -624,7 +679,7 @@ namespace LauncherDesktop
             Hide();
             notifyIcon1.Visible = true;
             notifyIcon1.BalloonTipText = "Estamos aqui na barra basta clica para abrir novamente :)";
-            notifyIcon1.ShowBalloonTip(1000);
+            notifyIcon1.ShowBalloonTip(1);
         }
 
         private void NotifyIcon1_MouseClick(object sender, MouseEventArgs e)
@@ -692,20 +747,22 @@ namespace LauncherDesktop
         }
         private void VerificarUpdateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
             if (VerChange())
             {
                 var butonsResult = MessageBox.Show("Existe uma nova versão deseja baixar?", "Nova versão disponivel", MessageBoxButtons.YesNo);
                 if (butonsResult == DialogResult.Yes)
                 {
-                    File.WriteAllText("dat.bin",NewVersion + Environment.NewLine + Ver);
-                    if (File.Exists("update.exe"))
+
+                    File.WriteAllText(Application.StartupPath + @"\dat.bin",NewVersion + Environment.NewLine + Ver);
+                    if (File.Exists(Application.StartupPath + @"\update.exe"))
                     {
-                    var processInfo = new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = "update.exe",
-                        UseShellExecute = true,
-                        Verb = "runas",
-                        Arguments = Ver
+                        var processInfo = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = (Application.StartupPath + @"\update.exe"),
+                            UseShellExecute = true,
+                            Verb = "runas",
+                            Arguments = NewVersion + ' ' + Ver
                     };
                     Process.Start(processInfo);
                     }else
@@ -717,6 +774,7 @@ namespace LauncherDesktop
             else
             {
                 MessageBox.Show("Não foi possivel ou você está usando a versão atual.", "versão");
+                File.WriteAllText("dat.bin", NewVersion + Environment.NewLine + NewVersion);
             }
         }
         private void Cm_itens_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -724,13 +782,20 @@ namespace LauncherDesktop
             if (String.Compare("Sair", e.ClickedItem.Text) == 0)
             {
                 Close();
-            }else
+            }/*else //Old Ver.
             {
                 int index = cm_itens.Items.IndexOf(e.ClickedItem);
-                // MessageBox.Show(e.ClickedItem.Text + " " + index);
-                listitens.Items[index].Selected = true;
-                Run(false);
-            }
+                //MessageBox.Show(e.ClickedItem.Text + " " + index);
+                try
+                {
+                    listitens.Items[index].Selected = true;
+                    Run(false);
+                }
+                catch
+                {
+                   
+                }
+            }*/
         }
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
@@ -742,6 +807,23 @@ namespace LauncherDesktop
                 //notifyIcon1.ShowBalloonTip(1000);
             }
         }
+        private void cm_itemsDropItems(object sender, ToolStripItemClickedEventArgs e)
+        {
+            //MessageBox.Show(e.ClickedItem.Text);
+            int index = listitens.Items.IndexOf(listitens.FindItemWithText(e.ClickedItem.Text));
+            try
+            {
+                listitens.Items[index].Selected = true;
+                Run(false);
+            }
+            catch
+            {
+
+            }
+            cm_itens.Close();
+        }
+
+
         private void AdicionarGrupoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string x = string.Empty;
@@ -815,10 +897,57 @@ namespace LauncherDesktop
                 }
                 catch
                 {
-                    //Nada acontece :V
+                
                 }
             }
             
+        }
+
+        private void desligarLigarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tmr_func.Enabled = desligarLigarToolStripMenuItem.Checked;
+
+        }
+
+        private void definirIconeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var file = new OpenFileDialog();
+            file.Filter = "Icones|*.ico|Todos arquivos|*.*";
+            var diag = file.ShowDialog();
+            if (diag == DialogResult.OK)
+            {
+                Icon largeIcon = IconExtractor.ExtractIconLarge(file.FileName);
+                if (largeIcon != null)
+                {
+                    mylist.Items[listitens.SelectedItems[0].Index] += ";" + file.FileName;
+                    lista_icons.Images.Add(largeIcon.ToBitmap());
+                    listitens.SelectedItems[0].ImageIndex = (lista_icons.Images.Count - 1);
+                    ChangueItens();
+                }
+                else
+                    MessageBox.Show("Erro não foi possivel extrair o icone do arquivo", "ERRO ICON", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            };
+
+        }
+
+
+        //Joke functions
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            string fpss = GetFps().ToString("N1");
+
+            if (mostrarHorasToolStripMenuItem.Checked && mostrarFPSToolStripMenuItem.Checked)
+                this.Text = TitleProgram + " FPS[" + fpss + "]  Horas (" + _lastCheckTime.Hour + ":" + _lastCheckTime.Minute + ":" + _lastCheckTime.Second + ")";
+
+            else
+            if (mostrarFPSToolStripMenuItem.Checked)
+                this.Text = TitleProgram + " FPS[" + fpss + "] ";
+            else
+            if (mostrarHorasToolStripMenuItem.Checked)
+                this.Text = TitleProgram + "  " + _lastCheckTime.Hour + " : " + _lastCheckTime.Minute + " : " + _lastCheckTime.Second;
+            else
+                this.Text = TitleProgram;
         }
 
     }

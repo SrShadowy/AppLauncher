@@ -1,6 +1,6 @@
 ﻿namespace UpdateToolsv1
 {
-    partial class Form1
+    partial class fm_update
     {
         /// <summary>
         /// Variável de designer necessária.
@@ -28,13 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fm_update));
             this.btn_update = new System.Windows.Forms.Button();
             this.btn_site = new System.Windows.Forms.Button();
             this.btn_down = new System.Windows.Forms.Button();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.pb_download = new System.Windows.Forms.ProgressBar();
             this.lbl_info = new System.Windows.Forms.Label();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.link_Restauration = new System.Windows.Forms.LinkLabel();
+            this.link_update = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // btn_update
@@ -67,13 +68,14 @@
             this.btn_down.Text = "Tenta download novamente";
             this.btn_down.UseVisualStyleBackColor = true;
             this.btn_down.Visible = false;
+            this.btn_down.Click += new System.EventHandler(this.btn_down_Click);
             // 
-            // progressBar1
+            // pb_download
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 22);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(431, 23);
-            this.progressBar1.TabIndex = 3;
+            this.pb_download.Location = new System.Drawing.Point(12, 22);
+            this.pb_download.Name = "pb_download";
+            this.pb_download.Size = new System.Drawing.Size(431, 23);
+            this.pb_download.TabIndex = 3;
             // 
             // lbl_info
             // 
@@ -84,34 +86,47 @@
             this.lbl_info.TabIndex = 4;
             this.lbl_info.Text = "Obtendo informação";
             // 
-            // linkLabel1
+            // link_Restauration
             // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(317, 48);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(126, 13);
-            this.linkLabel1.TabIndex = 5;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "Restaurar versão anterior";
-            this.linkLabel1.Visible = false;
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel1_LinkClicked);
+            this.link_Restauration.AutoSize = true;
+            this.link_Restauration.Location = new System.Drawing.Point(317, 48);
+            this.link_Restauration.Name = "link_Restauration";
+            this.link_Restauration.Size = new System.Drawing.Size(126, 13);
+            this.link_Restauration.TabIndex = 5;
+            this.link_Restauration.TabStop = true;
+            this.link_Restauration.Text = "Restaurar versão anterior";
+            this.link_Restauration.Visible = false;
+            this.link_Restauration.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel1_LinkClicked);
             // 
-            // Form1
+            // link_update
+            // 
+            this.link_update.AutoSize = true;
+            this.link_update.Location = new System.Drawing.Point(163, 91);
+            this.link_update.Name = "link_update";
+            this.link_update.Size = new System.Drawing.Size(117, 13);
+            this.link_update.TabIndex = 6;
+            this.link_update.TabStop = true;
+            this.link_update.Text = "Verificar updates online";
+            this.link_update.Visible = false;
+            this.link_update.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
+            // 
+            // fm_update
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(459, 131);
-            this.Controls.Add(this.linkLabel1);
+            this.Controls.Add(this.link_Restauration);
             this.Controls.Add(this.lbl_info);
-            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.pb_download);
             this.Controls.Add(this.btn_down);
             this.Controls.Add(this.btn_site);
             this.Controls.Add(this.btn_update);
+            this.Controls.Add(this.link_update);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Form1";
+            this.Name = "fm_update";
             this.Text = "UPDATE TOOLS";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
@@ -124,9 +139,10 @@
         private System.Windows.Forms.Button btn_update;
         private System.Windows.Forms.Button btn_site;
         private System.Windows.Forms.Button btn_down;
-        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ProgressBar pb_download;
         private System.Windows.Forms.Label lbl_info;
-        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.LinkLabel link_Restauration;
+        private System.Windows.Forms.LinkLabel link_update;
     }
 }
 

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{8B57D07D-5123-4088-991B-2306CEC4EDDD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>UpdateToolsv1</RootNamespace>
-    <AssemblyName>UpdateToolsv1</AssemblyName>
+    <RootNamespace>UpdateTools</RootNamespace>
+    <AssemblyName>Update</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -68,6 +68,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
