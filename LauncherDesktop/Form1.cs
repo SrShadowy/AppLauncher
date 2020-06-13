@@ -158,14 +158,20 @@ namespace LauncherDesktop
         {
             int indexforfile = listitens.SelectedIndices[0];
             mylist.SelectedIndex = indexforfile;
-            string pasta = Path.GetDirectoryName(mylist.SelectedItem.ToString());
+            string arquivo = mylist.SelectedItem.ToString();
+            string[] ExistIconEx = arquivo.Split(';');
+            arquivo = ExistIconEx[0];
+            string pasta = Path.GetDirectoryName(arquivo);
             System.Diagnostics.Process.Start(pasta);
         }
         void Run(bool adm)
         {
             int indexlist = listitens.SelectedIndices[0];
             mylist.SelectedIndex = indexlist;
+ 
             string arquivo = mylist.SelectedItem.ToString();
+            string[] ExistIconEx = arquivo.Split(';');
+            arquivo = ExistIconEx[0];
             string caminho = Path.GetDirectoryName(arquivo);
             string nome = Path.GetFileName(arquivo);
             var processInfo = new System.Diagnostics.ProcessStartInfo();
@@ -823,7 +829,6 @@ namespace LauncherDesktop
             cm_itens.Close();
         }
 
-
         private void AdicionarGrupoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string x = string.Empty;
@@ -930,7 +935,6 @@ namespace LauncherDesktop
             };
 
         }
-
 
         //Joke functions
         private void timer1_Tick(object sender, EventArgs e)
