@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -13,28 +14,35 @@ namespace LauncherDesktop
 {
     public partial class Form1 : Form
     {
+        KeyboardHotKeys hook = new KeyboardHotKeys();
         public Form1()
         {
             InitializeComponent();
+
+            // register the event that is fired after the key press.
+            KeyboardHotKeys.Current.KeyPressed += Current_KeyPressed;
+            KeyboardHotKeys.Current.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt, Keys.S);
+
+
         }
 
-        
         //Global vars
-        readonly ListBox mylist = new ListBox();
+        readonly ListBox mylist       = new ListBox();
         readonly ListBox ConfigGroups = new ListBox();
-        readonly ListBox ConfigAdmin = new ListBox();
-        readonly ListBox MyGroups = new ListBox();
+        readonly ListBox ConfigAdmin  = new ListBox();
+        readonly ListBox MyGroups     = new ListBox();
+        ListBox Macros                = new ListBox();
 
 
-
+        //Informations
         bool change = false;
         string result = string.Empty;
         string TitleProgram = string.Empty;
         bool question = false;
         readonly string myFile = Application.StartupPath + "\\DATA.bin";
-        readonly string Ver = "20.06.12";
-        public string NewVersion = string.Empty;                    
-
+        readonly string Ver = "20.08.05";
+        public string NewVersion = string.Empty;
+        
         public class IconExtractor
         {
             [DllImport("shell32.dll", EntryPoint = "ExtractIconEx")]
@@ -138,20 +146,119 @@ namespace LauncherDesktop
             return dialogResult;
         }
 
+        // Macro Editor
+        public static DialogResult ShowMacros(string title,ref ListBox Macros)
+        {
+            Form form = new Form();
+            ListBox listBox1 = new System.Windows.Forms.ListBox();
+            TextBox textBox1 = new System.Windows.Forms.TextBox();
+            TextBox textBox2 = new System.Windows.Forms.TextBox();
+            Button button1 = new System.Windows.Forms.Button();
+            Button button2 = new System.Windows.Forms.Button();
+            // 
+            // listBox1
+            // 
+            listBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            listBox1.FormattingEnabled = true;
+            listBox1.Location = new System.Drawing.Point(0, 0);
+            listBox1.Name = "listBox1";
+            listBox1.Size = new System.Drawing.Size(425, 303);
+            listBox1.SelectedIndexChanged += new System.EventHandler(listBox1_SelectedIndexChanged);
+
+            foreach (string newMacro in Macros.Items)
+            {
+                listBox1.Items.Add(newMacro);                                                                                                                   
+            }
+            // 
+            // textBox1
+            // 
+            textBox1.Name = "textBox1";
+            textBox1.TabIndex = 0;
+            textBox1.SetBounds(12, 309, 95, 20);
+            // 
+            // textBox2
+            // 
+            textBox2.Name = "textBox2";
+            textBox2.TabIndex = 2;
+            textBox2.SetBounds(115, 309, 295, 20);
+            // 
+            // button1
+            // 
+            button1.Location = new System.Drawing.Point(245, 340);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(81, 25);
+            button1.TabIndex = 3;
+            button1.Text = "Ok";
+            button1.UseVisualStyleBackColor = true;
+            button1.DialogResult = DialogResult.OK;
+            // 
+            // button2
+            // 
+            button2.DialogResult = DialogResult.Cancel;
+            button2.Location = new System.Drawing.Point(331, 340);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(81, 25);
+            button2.TabIndex = 4;
+            button2.Text = "Cancel";
+            button2.UseVisualStyleBackColor = true;
+            // 
+            // Form1
+            // 
+            form.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            form.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            form.ClientSize = new System.Drawing.Size(425, 366);
+            form.Controls.Add(button2);
+            form.Controls.Add(button1);
+            form.Controls.Add(textBox2);
+            form.Controls.Add(textBox1);
+            form.Controls.Add(listBox1);
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+            form.Name = "Form1";
+            form.Text = title;
+
+            void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+            {                               
+                if (listBox1.SelectedIndex > 0)
+                { 
+                string abc = listBox1.Items[ listBox1.SelectedIndex].ToString();
+                textBox1.Text = abc.Split(' ')[0];
+                textBox2.Text = abc.Remove(0,textBox1.Text.Length+1);
+                }
+            }
+
+            form.AcceptButton = button1;
+            form.CancelButton = button2;
+
+            DialogResult dialogResult = form.ShowDialog();
+            if (dialogResult == DialogResult.OK)
+            {
+                if (listBox1.SelectedIndex > 0)
+                {
+                    listBox1.Items[listBox1.SelectedIndex] = textBox1.Text + ' ' + textBox2.Text;
+                }
+                Macros = listBox1;
+            }
+
+            return dialogResult;
+        }
+       
         //Functions
         void AddFile(string filename)
         {
 
             result = Path.GetFileNameWithoutExtension(filename);
             mylist.Items.Add(filename);
-            try 
-            { 
-                Icon largeIcon = IconExtractor.ExtractIconLarge(filename);
+            Icon largeIcon = IconExtractor.ExtractIconLarge(filename);
+            if (largeIcon != null)
+            {
                 lista_icons.Images.Add(largeIcon.ToBitmap());
                 listitens.Items.Add(result, lista_icons.Images.Count - 1);
-            }
-            catch{ listitens.Items.Add(result, 0); }
-                
+            }else
+                listitens.Items.Add(result, 0);
+
 
         }
         void OpenDirFile()
@@ -188,7 +295,7 @@ namespace LauncherDesktop
             }
             catch
             {
-                // Sem permissao
+                // don't have permission
             }
         }   
         void Remove()
@@ -202,7 +309,7 @@ namespace LauncherDesktop
                 }
                 catch
                 {
-                    // N tem grupo
+                    //don't have group
                 }
                 try
                 { 
@@ -210,12 +317,13 @@ namespace LauncherDesktop
                 }
                 catch
                 {
-                    //N tem edicao admin
+                    //don't have config admin
                 }
-               
+
                 mylist.Items.RemoveAt(val);
                 listitens.Items.RemoveAt(val);
-                cm_itens.Items.RemoveAt(val);
+
+
 
             }
             catch { }
@@ -235,6 +343,7 @@ namespace LauncherDesktop
             System.IO.File.AppendAllLines(myFile, MyGroups.Items.OfType<string>().ToArray());
             System.IO.File.AppendAllLines(myFile, ConfigAdmin.Items.OfType<string>().ToArray());
             System.IO.File.AppendAllLines(myFile, ConfigGroups.Items.OfType<string>().ToArray());
+            System.IO.File.AppendAllLines(myFile, Macros.Items.OfType<string>().ToArray());
 
             this.Text = TitleProgram;
             change = false;
@@ -246,6 +355,7 @@ namespace LauncherDesktop
             _ = ConfigGroups.Items.Add("<ITENS_G>");
             _ = ConfigAdmin.Items.Add("<ITENS_C>");
             _ = MyGroups.Items.Add("<GROUPS>");
+            _ = Macros.Items.Add("<MACROS>");
 
 
             if (File.Exists(myFile))
@@ -254,6 +364,7 @@ namespace LauncherDesktop
                 bool AD_Groups = false;
                 bool groups = false;
                 bool admins = false;
+                bool macros = false;
                 string[] lines = System.IO.File.ReadAllLines(myFile);
                 for (int i = 0; i < lines.Count(); ++i)
                 {
@@ -275,12 +386,28 @@ namespace LauncherDesktop
                         admins = true;
                         continue;
                     }
+                    if (string.Compare(lines[i], "<MACROS>") == 0)
+                    {
+                        config_itens = false;
+                        AD_Groups = false;
+                        groups = false;
+                        admins = false;
+                        macros = true;
+                        continue;
+                    }
                     if ((string.Compare(lines[i], string.Empty) == 0))
                         continue;
 
-                    if (!groups && !admins && !AD_Groups && !config_itens)
+                    if (!groups && !admins && !AD_Groups && !config_itens && !macros)
                     {
                         string[] FileAndIconEx = lines[i].Split(';');
+                        if (!File.Exists(FileAndIconEx[0]))
+                        {
+                            wARNINGToolStripMenuItem.Visible = true;
+                            wARNINGToolStripMenuItem.DropDownItems.Add(FileAndIconEx[0]);
+                            continue;
+                        }
+
                         mylist.Items.Add(lines[i]);
                         Icon largeIcon = null;
                         result = Path.GetFileNameWithoutExtension(FileAndIconEx[0]);
@@ -361,6 +488,13 @@ namespace LauncherDesktop
                         catch
                         { }
 
+                    }else if (macros)
+                    {
+                        try
+                        {
+                            Macros.Items.Add(lines[i]);
+                        }
+                        catch { }
                     }
                     
                    
@@ -473,6 +607,42 @@ namespace LauncherDesktop
             MyGroups.Items.RemoveAt(index+1);
             moverParaOGrupoToolStripMenuItem.DropDownItems.RemoveAt(index);
             removerGrupoToolStripMenuItem.DropDownItems.RemoveAt(index);
+        }
+        void Pesquisa()
+        {
+            if (this.MinimizeBox)
+                WindowState = FormWindowState.Normal;
+
+            if (!this.Focused)
+            {
+                this.TopMost = true;
+                this.TopMost = false;
+            }
+
+            string Seach = string.Empty;
+            if (DialogResult.OK == InputBox("Pesquisar", "Digite [MACRO] [OQUE QUERO]", ref Seach))
+            {
+                string getArg = Seach.Split(' ')[0];
+                Seach = Seach.Remove(0, getArg.Length + 1);
+
+                foreach (string ps in Macros.Items)
+                {
+                    if (ps.Contains(getArg))
+                    {
+                        Seach = ps.Remove(0, getArg.Length + 1) + Seach;
+                        Process.Start(Seach);
+                        WindowState = FormWindowState.Minimized;
+                        break;
+                    }
+                }
+            }
+        }
+        void Current_KeyPressed(object sender, KeyboardHotKeys.KeyPressedEventArgs e)
+        {
+            if (e.Modifier == (KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt))
+            {
+                Pesquisa();
+            }
         }
 
 
@@ -911,7 +1081,6 @@ namespace LauncherDesktop
         private void desligarLigarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             tmr_func.Enabled = desligarLigarToolStripMenuItem.Checked;
-
         }
 
         private void definirIconeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -924,7 +1093,15 @@ namespace LauncherDesktop
                 Icon largeIcon = IconExtractor.ExtractIconLarge(file.FileName);
                 if (largeIcon != null)
                 {
-                    mylist.Items[listitens.SelectedItems[0].Index] += ";" + file.FileName;
+                    int index = listitens.SelectedItems[0].Index;
+                    string arq = mylist.Items[index].ToString();
+                    string[] IconEx = arq.Split(';');
+
+                    if (IconEx.Length > 1)
+                        mylist.Items[index] = IconEx[0] + ";" + file.FileName;
+                    else
+                        mylist.Items[index] += ";" + file.FileName;
+
                     lista_icons.Images.Add(largeIcon.ToBitmap());
                     listitens.SelectedItems[0].ImageIndex = (lista_icons.Images.Count - 1);
                     ChangueItens();
@@ -933,9 +1110,7 @@ namespace LauncherDesktop
                     MessageBox.Show("Erro não foi possivel extrair o icone do arquivo", "ERRO ICON", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             };
-
         }
-
         //Joke functions
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -954,5 +1129,61 @@ namespace LauncherDesktop
                 this.Text = TitleProgram;
         }
 
+        private void wARNINGToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            outrosToolStripMenuItem.HideDropDown();
+      
+            DialogResult Msg_warning = MessageBox.Show("Esse programa não foi encontrado deseja procura-lo?", "Error", MessageBoxButtons.YesNo);
+            if (Msg_warning == DialogResult.Yes)
+            {
+                var file = new OpenFileDialog();
+                file.Filter = Path.GetFileNameWithoutExtension(e.ClickedItem.Text)+ "|*" + Path.GetExtension(e.ClickedItem.Text);
+
+                var dialogResult = file.ShowDialog();
+
+                if (dialogResult == DialogResult.OK)
+                {
+                    try
+                    {
+                        LoadFile(file.FileName);
+                        ChangueItens();
+                    }
+                    catch
+                    {
+        
+                    }
+                }
+
+            }
+
+        }
+
+        private void criarMacroDePesquisaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string Pesquisa = string.Empty;
+            string Arg = string.Empty;
+
+           if (DialogResult.OK == InputBox("Criar macro", "Escolha o site para o macro", ref Pesquisa))
+            {
+                if (DialogResult.OK == InputBox("Criar macro", "escolha o argumento de pesquisa", ref Arg))
+                {
+                    Macros.Items.Add(Arg + " " + Pesquisa);
+                    ChangueItens();                                                            
+                }
+            }
+                
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.S)
+                Pesquisa();
+        }
+
+        private void editarMacroToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (DialogResult.OK == ShowMacros("Editor de macro", ref Macros))
+                ChangueItens(); 
+        }
     }
 }
