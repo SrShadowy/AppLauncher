@@ -49,7 +49,7 @@ namespace System.Windows.Forms
                     // get the keys.
                     Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
                     ModifierKeys modifier = (ModifierKeys)((int)m.LParam & 0xFFFF);
-
+                   // MessageBox.Show(modifier.ToString() + Convert.ToChar(key));
                     // invoke the event to notify the parent.
                     if (KeyPressed != null)
                         KeyPressed(this, new KeyPressedEventArgs(modifier, key));
@@ -95,6 +95,16 @@ namespace System.Windows.Forms
             if (!RegisterHotKey(_window.Handle, _currentId, (uint)modifier, (uint)key))
                 throw new InvalidOperationException("Couldn’t register the hot key.");
         }
+
+        public void UnresgistHotKey()
+        {
+            for (int i = _currentId; i > 0; i--)
+            {
+                UnregisterHotKey(_window.Handle, i);
+            }
+
+        }
+
 
         /// <summary>
         /// A hot key has been pressed.
@@ -167,6 +177,11 @@ namespace System.Windows.Forms
                     _Current = new KeyboardHotKeys();
                 return _Current;
             }
+        }
+
+        public static explicit operator KeyboardHotKeys(uint v)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

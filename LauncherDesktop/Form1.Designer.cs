@@ -61,6 +61,8 @@
             this.mostrarHorasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.desligarLigarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.criarMacroDePesquisaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editarMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hotkeyMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wARNINGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lista_icons = new System.Windows.Forms.ImageList(this.components);
             this.listitens = new System.Windows.Forms.ListView();
@@ -74,7 +76,6 @@
             this.definirIconeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tmr_func = new System.Windows.Forms.Timer(this.components);
-            this.editarMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.cms_viewer.SuspendLayout();
             this.SuspendLayout();
@@ -305,7 +306,8 @@
             this.mostrarHorasToolStripMenuItem,
             this.desligarLigarToolStripMenuItem,
             this.criarMacroDePesquisaToolStripMenuItem,
-            this.editarMacroToolStripMenuItem});
+            this.editarMacroToolStripMenuItem,
+            this.hotkeyMacroToolStripMenuItem});
             this.funçõesSuperUteisToolStripMenuItem.Name = "funçõesSuperUteisToolStripMenuItem";
             this.funçõesSuperUteisToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.funçõesSuperUteisToolStripMenuItem.Text = "Funções super uteis";
@@ -338,6 +340,20 @@
             this.criarMacroDePesquisaToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
             this.criarMacroDePesquisaToolStripMenuItem.Text = "Criar macro de pesquisa";
             this.criarMacroDePesquisaToolStripMenuItem.Click += new System.EventHandler(this.criarMacroDePesquisaToolStripMenuItem_Click);
+            // 
+            // editarMacroToolStripMenuItem
+            // 
+            this.editarMacroToolStripMenuItem.Name = "editarMacroToolStripMenuItem";
+            this.editarMacroToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.editarMacroToolStripMenuItem.Text = "Editar macro";
+            this.editarMacroToolStripMenuItem.Click += new System.EventHandler(this.editarMacroToolStripMenuItem_Click);
+            // 
+            // hotkeyMacroToolStripMenuItem
+            // 
+            this.hotkeyMacroToolStripMenuItem.Name = "hotkeyMacroToolStripMenuItem";
+            this.hotkeyMacroToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.hotkeyMacroToolStripMenuItem.Text = "Hotkey Macro";
+            this.hotkeyMacroToolStripMenuItem.Click += new System.EventHandler(this.hotkeyMacroToolStripMenuItem_Click);
             // 
             // wARNINGToolStripMenuItem
             // 
@@ -446,13 +462,6 @@
             // 
             this.tmr_func.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // editarMacroToolStripMenuItem
-            // 
-            this.editarMacroToolStripMenuItem.Name = "editarMacroToolStripMenuItem";
-            this.editarMacroToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
-            this.editarMacroToolStripMenuItem.Text = "Editar macro";
-            this.editarMacroToolStripMenuItem.Click += new System.EventHandler(this.editarMacroToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -527,6 +536,7 @@
         private System.Windows.Forms.ToolStripMenuItem wARNINGToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem criarMacroDePesquisaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editarMacroToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hotkeyMacroToolStripMenuItem;
     }
 }
 

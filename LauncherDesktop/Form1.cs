@@ -6,8 +6,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Threading;
+using System.Timers;
 using System.Windows.Forms;
 
 namespace LauncherDesktop
@@ -20,9 +23,7 @@ namespace LauncherDesktop
             InitializeComponent();
 
             // register the event that is fired after the key press.
-            KeyboardHotKeys.Current.KeyPressed += Current_KeyPressed;
-            KeyboardHotKeys.Current.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt, Keys.S);
-
+            hook.KeyPressed += Current_KeyPressed;
 
         }
 
@@ -32,6 +33,10 @@ namespace LauncherDesktop
         readonly ListBox ConfigAdmin  = new ListBox();
         readonly ListBox MyGroups     = new ListBox();
         ListBox Macros                = new ListBox();
+        ListBox Key_Macros            = new ListBox();
+        static KeyboardHotKeys.ModifierKeys mkey = KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt;
+        static Keys m_key = Keys.S;
+
 
 
         //Informations
@@ -40,7 +45,7 @@ namespace LauncherDesktop
         string TitleProgram = string.Empty;
         bool question = false;
         readonly string myFile = Application.StartupPath + "\\DATA.bin";
-        readonly string Ver = "20.08.05";
+        readonly string Ver = "20.08.08";
         public string NewVersion = string.Empty;
         
         public class IconExtractor
@@ -150,6 +155,7 @@ namespace LauncherDesktop
         public static DialogResult ShowMacros(string title,ref ListBox Macros)
         {
             Form form = new Form();
+            form.TopMost = true;
             ListBox listBox1 = new System.Windows.Forms.ListBox();
             TextBox textBox1 = new System.Windows.Forms.TextBox();
             TextBox textBox2 = new System.Windows.Forms.TextBox();
@@ -230,6 +236,7 @@ namespace LauncherDesktop
             }
 
             form.AcceptButton = button1;
+          
             form.CancelButton = button2;
 
             DialogResult dialogResult = form.ShowDialog();
@@ -244,7 +251,257 @@ namespace LauncherDesktop
 
             return dialogResult;
         }
-       
+
+        // Register Keys?
+        public static DialogResult RegisterKeys(KeyboardHotKeys hook, ref ListBox saveThis)
+        {
+            Form   form         = new Form();
+            Button btn_ok       = new Button();
+            Button btn_cancel   = new Button();
+            Panel  pn_blank     = new Panel();
+            Label  lb_keys      = new Label();
+            Button btn_Record = new Button();
+            
+
+             //=====================================
+             Keys code_key = new Keys();
+            bool alt = false;
+            bool shift = false;
+            bool control = false;
+            bool alt_shitf = false;
+            bool control_alt = false;
+            bool control_shift = false;
+            bool control_alt_shift = false;
+            //=====================================
+
+
+            //Timer
+            System.Windows.Forms.Timer tm_record = new System.Windows.Forms.Timer();
+            tm_record.Interval = 100;
+            tm_record.Tick += new System.EventHandler(ticktock);
+
+            void ticktock(object sender, EventArgs e)
+            {
+                if (Control.ModifierKeys == Keys.Control)
+                {
+                    lb_keys.Text = "Control";
+                    control = true;
+                    alt = false;
+                    shift = false;
+                    alt_shitf = false;
+                    control_alt = false;
+                    control_shift = false;
+                    control_alt_shift = false;
+                }
+                if (Control.ModifierKeys == Keys.Shift)
+                {
+                    lb_keys.Text = "Shift";
+                    shift = true;
+                    control = false;
+                    alt = false;
+                    alt_shitf = false;
+                    control_alt = false;
+                    control_shift = false;
+                    control_alt_shift = false;
+                }
+                if (Control.ModifierKeys == Keys.Alt)
+                {
+                    lb_keys.Text = "Alt";
+                    alt = true;
+                    shift = false;
+                    control = false;
+                    alt_shitf = false;
+                    control_alt = false;
+                    control_shift = false;
+                    control_alt_shift = false;
+                }
+                if (Control.ModifierKeys == (Keys.Alt | Keys.Control))
+                {
+                    lb_keys.Text = "Alt + Control";
+                    control_alt = true;
+                    alt = false;
+                    shift = false;
+                    control = false;
+                    alt_shitf = false;
+                    control_shift = false;
+                    control_alt_shift = false;
+                }
+                if (Control.ModifierKeys == (Keys.Alt | Keys.Shift))
+                {
+                    lb_keys.Text = "Alt + Shift";
+                    alt_shitf = true;
+                    alt = false;
+                    shift = false;
+                    control = false;
+                    control_alt = false;
+                    control_shift = false;
+                    control_alt_shift = false;
+                }
+                if (Control.ModifierKeys == (Keys.Control | Keys.Shift))
+                {
+                    lb_keys.Text = "Control + Shift";
+                    control_shift = true;
+                    alt = false;
+                    shift = false;
+                    control = false;
+                    alt_shitf = false;
+                    control_alt = false;
+                    control_alt_shift = false;
+                }
+                if (Control.ModifierKeys == (Keys.Control | Keys.Shift | Keys.Alt))
+                {
+                    lb_keys.Text = "Control + Shift + Alt";
+                    control_alt_shift = true;
+                    alt = false;
+                    shift = false;
+                    control = false;
+                    alt_shitf = false;
+                    control_alt = false;
+                    control_shift = false;
+                }
+
+            }
+
+            //Form
+            form.SuspendLayout();
+
+            form.Text = "Editar hotkeys";
+            form.ClientSize = new System.Drawing.Size(405, 100);
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.TopMost = true;
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+            form.KeyDown += new KeyEventHandler(KeyDown);
+
+
+
+            void KeyDown(object sender, KeyEventArgs e)
+            {
+
+                lb_keys.Text += " + " + Convert.ToChar(e.KeyValue);
+                code_key = e.KeyCode;
+
+            }
+
+            //button OK
+            btn_ok.Text = "Ok";
+            btn_ok.Location = new Point(10, 70);
+            btn_ok.Size = new Size(80, 25);
+            btn_ok.Click += new EventHandler(ok_isOk);
+            //button Cancel
+            btn_cancel.Text = "Cancel";
+            btn_cancel.Location = new Point(320, 70);
+            btn_cancel.Size = new Size(80, 25);
+
+            //Painel
+            pn_blank.Size = new Size(400, 50);
+            pn_blank.BackColor = Color.White;
+            pn_blank.Location = new Point(12, 12);
+            pn_blank.Controls.Add(lb_keys);
+            pn_blank.Controls.Add(btn_Record);
+            pn_blank.Visible = false;
+
+            //label
+            lb_keys.Text = mkey.ToString() + "+" + m_key.ToString() ;
+            lb_keys.AutoSize = true;
+            lb_keys.Font = new Font("Malgun Gothic", 14.25F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
+            lb_keys.Location = new Point(7, 7);
+            lb_keys.Size = new Size(195, 25);
+
+            //button record
+            btn_Record.Text = "Editar macro";
+            btn_Record.Location = new Point(275, 10);
+            btn_Record.Size = new Size(125, 35);
+            btn_Record.Click += new EventHandler(click_record);
+
+
+            
+            form.Controls.Add(btn_cancel);
+            form.Controls.Add(btn_ok);
+            form.Controls.Add(pn_blank);
+            form.Controls.Add(lb_keys);
+            form.Controls.Add(btn_Record);
+            form.ResumeLayout(false);
+
+            void click_record(object sender, EventArgs e)
+            {
+                if (form.KeyPreview)
+                {
+                    
+                    btn_Record.Text = "Editar Tecla";
+                    tm_record.Stop();
+                    form.KeyPreview = false;
+                }
+                else
+                {
+                    btn_Record.Text = "Parar de gravar";
+                    tm_record.Start();
+                    form.KeyPreview = true;
+                }
+            }
+
+            form.AcceptButton = btn_ok;
+            form.CancelButton = btn_cancel;
+            DialogResult dialogResult = form.ShowDialog();
+
+            void ok_isOk(object sender, EventArgs e)
+            {
+                form.DialogResult = DialogResult.OK;
+            }
+
+            if (dialogResult == DialogResult.OK)
+            {
+                saveThis.Items.Add(code_key.ToString());
+                hook.UnresgistHotKey();
+                if (control_alt_shift)
+                {
+                    saveThis.Items.Add("7");
+                    if (code_key > 0)
+                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt | KeyboardHotKeys.ModifierKeys.Shift, code_key);
+                };
+                if (control_shift)
+                {
+                    saveThis.Items.Add("6");
+                    if (code_key > 0)
+                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Shift, code_key);
+                };
+                if (control_alt)
+                {
+                    saveThis.Items.Add("3");
+                    if (code_key > 0)
+                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt, code_key);
+                };
+                if (control)
+                {
+                    saveThis.Items.Add("2");
+                    if (code_key > 0)
+                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control , code_key);
+                };
+                if (shift)
+                {
+                    saveThis.Items.Add("4");
+                    if (code_key > 0)
+                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Shift, code_key);
+                };
+                if (alt_shitf)
+                {
+                    saveThis.Items.Add("5");
+                    if (code_key > 0)
+                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Alt | KeyboardHotKeys.ModifierKeys.Shift, code_key);
+                };
+                if (alt)
+                {
+                    saveThis.Items.Add("1");
+                    if (code_key > 0)
+                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Alt, code_key);
+                };
+            }
+
+
+            return dialogResult;
+        }
+                                            
         //Functions
         void AddFile(string filename)
         {
@@ -344,6 +601,7 @@ namespace LauncherDesktop
             System.IO.File.AppendAllLines(myFile, ConfigAdmin.Items.OfType<string>().ToArray());
             System.IO.File.AppendAllLines(myFile, ConfigGroups.Items.OfType<string>().ToArray());
             System.IO.File.AppendAllLines(myFile, Macros.Items.OfType<string>().ToArray());
+            System.IO.File.AppendAllLines(myFile, Key_Macros.Items.OfType<string>().ToArray());
 
             this.Text = TitleProgram;
             change = false;
@@ -356,7 +614,7 @@ namespace LauncherDesktop
             _ = ConfigAdmin.Items.Add("<ITENS_C>");
             _ = MyGroups.Items.Add("<GROUPS>");
             _ = Macros.Items.Add("<MACROS>");
-
+            _ = Key_Macros.Items.Add("<K_M>");
 
             if (File.Exists(myFile))
             {
@@ -365,6 +623,7 @@ namespace LauncherDesktop
                 bool groups = false;
                 bool admins = false;
                 bool macros = false;
+                bool k_m    = false;
                 string[] lines = System.IO.File.ReadAllLines(myFile);
                 for (int i = 0; i < lines.Count(); ++i)
                 {
@@ -395,6 +654,12 @@ namespace LauncherDesktop
                         macros = true;
                         continue;
                     }
+                    if (string.Compare(lines[i], "<K_M>") == 0)
+                    {
+                        k_m    = true;
+                        continue;
+                    }
+
                     if ((string.Compare(lines[i], string.Empty) == 0))
                         continue;
 
@@ -488,14 +753,33 @@ namespace LauncherDesktop
                         catch
                         { }
 
-                    }else if (macros)
+                    }
+                    else if (macros)
                     {
                         try
                         {
-                            Macros.Items.Add(lines[i]);
+                            if (k_m)
+                            {
+                                Key_Macros.Items.Add(lines[i]);
+                                uint ts_key = 0;
+                                char c_key;
+                                c_key = lines[i].ToCharArray()[0];
+                                bool convert = uint.TryParse(lines[i], out ts_key);
+
+                                if (convert)
+                                    mkey = (KeyboardHotKeys.ModifierKeys)ts_key;
+                                else if (c_key != 0)
+                                    m_key = (Keys)c_key;
+                            
+                                    
+                                
+                            }else
+                                Macros.Items.Add(lines[i]);
                         }
                         catch { }
+
                     }
+                    
                     
                    
                 }
@@ -518,7 +802,7 @@ namespace LauncherDesktop
                 }
 
             }
-
+            hook.RegisterHotKey(mkey, m_key);
             cm_itens.Items.Add("Sair");
             
         }
@@ -639,10 +923,10 @@ namespace LauncherDesktop
         }
         void Current_KeyPressed(object sender, KeyboardHotKeys.KeyPressedEventArgs e)
         {
-            if (e.Modifier == (KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt))
-            {
+   
+
                 Pesquisa();
-            }
+      
         }
 
 
@@ -1184,6 +1468,15 @@ namespace LauncherDesktop
         {
             if (DialogResult.OK == ShowMacros("Editor de macro", ref Macros))
                 ChangueItens(); 
+        }
+
+        private void hotkeyMacroToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Key_Macros.Items.Clear();
+            _ = Key_Macros.Items.Add("<K_M>");
+            if (RegisterKeys(hook, ref Key_Macros) == DialogResult.OK)   //Need now unistall old hotkeys
+                ChangueItens();
+
         }
     }
 }
