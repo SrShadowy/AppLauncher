@@ -29,9 +29,12 @@ namespace LauncherDesktop
 
         //Global vars
         readonly ListBox mylist       = new ListBox();
+        readonly ListBox rename       = new ListBox();
         readonly ListBox ConfigGroups = new ListBox();
         readonly ListBox ConfigAdmin  = new ListBox();
         readonly ListBox MyGroups     = new ListBox();
+
+
         ListBox Macros                = new ListBox();
         ListBox Key_Macros            = new ListBox();
         static KeyboardHotKeys.ModifierKeys mkey = KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt;
@@ -45,7 +48,7 @@ namespace LauncherDesktop
         string TitleProgram = string.Empty;
         bool question = false;
         readonly string myFile = Application.StartupPath + "\\DATA.bin";
-        readonly string Ver = "20.08.08";
+        readonly string Ver = "20.11.24";
         public string NewVersion = string.Empty;
         
         public class IconExtractor
@@ -252,119 +255,28 @@ namespace LauncherDesktop
             return dialogResult;
         }
 
+
+        public struct tkeys
+        {
+            public Keys x;
+            public bool shift;
+            public bool control;
+            public bool alt;
+        }
+
         // Register Keys?
         public static DialogResult RegisterKeys(KeyboardHotKeys hook, ref ListBox saveThis)
         {
-            Form   form         = new Form();
-            Button btn_ok       = new Button();
-            Button btn_cancel   = new Button();
-            Panel  pn_blank     = new Panel();
-            Label  lb_keys      = new Label();
+
+            Form form = new Form();
+            Button btn_ok = new Button();
+            Button btn_cancel = new Button();
+            Panel pn_blank = new Panel();
+            Label lb_keys = new Label();
             Button btn_Record = new Button();
-            
-
-             //=====================================
-             Keys code_key = new Keys();
-            bool alt = false;
-            bool shift = false;
-            bool control = false;
-            bool alt_shitf = false;
-            bool control_alt = false;
-            bool control_shift = false;
-            bool control_alt_shift = false;
-            //=====================================
-
-
-            //Timer
-            System.Windows.Forms.Timer tm_record = new System.Windows.Forms.Timer();
-            tm_record.Interval = 100;
-            tm_record.Tick += new System.EventHandler(ticktock);
-
-            void ticktock(object sender, EventArgs e)
-            {
-                if (Control.ModifierKeys == Keys.Control)
-                {
-                    lb_keys.Text = "Control";
-                    control = true;
-                    alt = false;
-                    shift = false;
-                    alt_shitf = false;
-                    control_alt = false;
-                    control_shift = false;
-                    control_alt_shift = false;
-                }
-                if (Control.ModifierKeys == Keys.Shift)
-                {
-                    lb_keys.Text = "Shift";
-                    shift = true;
-                    control = false;
-                    alt = false;
-                    alt_shitf = false;
-                    control_alt = false;
-                    control_shift = false;
-                    control_alt_shift = false;
-                }
-                if (Control.ModifierKeys == Keys.Alt)
-                {
-                    lb_keys.Text = "Alt";
-                    alt = true;
-                    shift = false;
-                    control = false;
-                    alt_shitf = false;
-                    control_alt = false;
-                    control_shift = false;
-                    control_alt_shift = false;
-                }
-                if (Control.ModifierKeys == (Keys.Alt | Keys.Control))
-                {
-                    lb_keys.Text = "Alt + Control";
-                    control_alt = true;
-                    alt = false;
-                    shift = false;
-                    control = false;
-                    alt_shitf = false;
-                    control_shift = false;
-                    control_alt_shift = false;
-                }
-                if (Control.ModifierKeys == (Keys.Alt | Keys.Shift))
-                {
-                    lb_keys.Text = "Alt + Shift";
-                    alt_shitf = true;
-                    alt = false;
-                    shift = false;
-                    control = false;
-                    control_alt = false;
-                    control_shift = false;
-                    control_alt_shift = false;
-                }
-                if (Control.ModifierKeys == (Keys.Control | Keys.Shift))
-                {
-                    lb_keys.Text = "Control + Shift";
-                    control_shift = true;
-                    alt = false;
-                    shift = false;
-                    control = false;
-                    alt_shitf = false;
-                    control_alt = false;
-                    control_alt_shift = false;
-                }
-                if (Control.ModifierKeys == (Keys.Control | Keys.Shift | Keys.Alt))
-                {
-                    lb_keys.Text = "Control + Shift + Alt";
-                    control_alt_shift = true;
-                    alt = false;
-                    shift = false;
-                    control = false;
-                    alt_shitf = false;
-                    control_alt = false;
-                    control_shift = false;
-                }
-
-            }
 
             //Form
             form.SuspendLayout();
-
             form.Text = "Editar hotkeys";
             form.ClientSize = new System.Drawing.Size(405, 100);
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -373,14 +285,99 @@ namespace LauncherDesktop
             form.MinimizeBox = false;
             form.MaximizeBox = false;
             form.KeyDown += new KeyEventHandler(KeyDown);
+            form.KeyUp += new KeyEventHandler(KeyUp);
 
+            tkeys Tkeys = new tkeys();
 
+            void TextKeys(string text, bool incOrDec)
+            {
+                if (incOrDec)
+                {
+                    if (lb_keys.Text.Contains(text))
+                    {
+                        //contnue? or break?
+                    }
+                    else if (lb_keys.Text.Length > 0)
+                    {
+                        lb_keys.Text += "+ " + text;
+                    }
+                    else
+                        lb_keys.Text = text;
+
+                } else
+                {
+                    if (lb_keys.Text.Contains(text))
+                    {
+                        string removeText = lb_keys.Text.Contains("+ " + text) ? lb_keys.Text.Replace("+ " + text, string.Empty) : lb_keys.Text.Replace(text, string.Empty);
+                        lb_keys.Text = removeText;
+                    }
+
+                }
+
+            }
+
+            void KeyUp(object sender, KeyEventArgs e)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.ShiftKey:
+                        TextKeys("shift", false);
+                        Tkeys.shift = false;
+                        break;
+                    case Keys.ControlKey:
+                        TextKeys("control", false);
+                        Tkeys.control = false;
+                        break;
+
+                    case Keys.Menu:
+                        TextKeys("alt", false);
+                        Tkeys.alt = false;
+                        break;
+
+                    default:
+                        TextKeys(Convert.ToString(e.KeyCode), false);
+                        Tkeys.x = 0;
+                        break;
+                }
+            }
 
             void KeyDown(object sender, KeyEventArgs e)
             {
+                switch (e.KeyCode)
+                {
+                    case Keys.ShiftKey:
+                        Tkeys.shift = true;
+                        TextKeys("shift", true);
+                        break;
+                    case Keys.ControlKey:
+                        TextKeys("control", true);
+                        Tkeys.control = true;
+                        break;
 
-                lb_keys.Text += " + " + Convert.ToChar(e.KeyValue);
-                code_key = e.KeyCode;
+                    case Keys.Menu:
+                        TextKeys("alt", true);
+                        Tkeys.alt = true;
+                        break;
+
+                    default:
+                        TextKeys(Convert.ToString(e.KeyCode), true);
+                        Tkeys.x = e.KeyCode;
+                        break;
+                  //Because??? Anyway
+                        /* case Keys.Control:
+                        TextKeys("control", true);
+                        Tkeys.control = true;
+                        break;
+                    case Keys.Alt:
+                        TextKeys("alt", true);
+                        Tkeys.alt = true;
+                        break;
+                    case Keys.Shift:
+                        TextKeys("shift", true);
+                        Tkeys.alt = true;
+                        break;
+                        */
+                }
 
             }
 
@@ -403,7 +400,7 @@ namespace LauncherDesktop
             pn_blank.Visible = false;
 
             //label
-            lb_keys.Text = mkey.ToString() + "+" + m_key.ToString() ;
+            lb_keys.Text = mkey.ToString() + "+" + m_key.ToString();
             lb_keys.AutoSize = true;
             lb_keys.Font = new Font("Malgun Gothic", 14.25F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
             lb_keys.Location = new Point(7, 7);
@@ -416,7 +413,7 @@ namespace LauncherDesktop
             btn_Record.Click += new EventHandler(click_record);
 
 
-            
+
             form.Controls.Add(btn_cancel);
             form.Controls.Add(btn_ok);
             form.Controls.Add(pn_blank);
@@ -428,15 +425,15 @@ namespace LauncherDesktop
             {
                 if (form.KeyPreview)
                 {
-                    
                     btn_Record.Text = "Editar Tecla";
-                    tm_record.Stop();
+                    //tm_record.Stop();
                     form.KeyPreview = false;
                 }
                 else
                 {
+                    lb_keys.Text = string.Empty;
                     btn_Record.Text = "Parar de gravar";
-                    tm_record.Start();
+                    //tm_record.Start();
                     form.KeyPreview = true;
                 }
             }
@@ -452,52 +449,23 @@ namespace LauncherDesktop
 
             if (dialogResult == DialogResult.OK)
             {
-                saveThis.Items.Add(code_key.ToString());
                 hook.UnresgistHotKey();
-                if (control_alt_shift)
-                {
-                    saveThis.Items.Add("7");
-                    if (code_key > 0)
-                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt | KeyboardHotKeys.ModifierKeys.Shift, code_key);
-                };
-                if (control_shift)
-                {
-                    saveThis.Items.Add("6");
-                    if (code_key > 0)
-                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Shift, code_key);
-                };
-                if (control_alt)
-                {
-                    saveThis.Items.Add("3");
-                    if (code_key > 0)
-                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control | KeyboardHotKeys.ModifierKeys.Alt, code_key);
-                };
-                if (control)
-                {
-                    saveThis.Items.Add("2");
-                    if (code_key > 0)
-                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Control , code_key);
-                };
-                if (shift)
-                {
-                    saveThis.Items.Add("4");
-                    if (code_key > 0)
-                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Shift, code_key);
-                };
-                if (alt_shitf)
-                {
-                    saveThis.Items.Add("5");
-                    if (code_key > 0)
-                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Alt | KeyboardHotKeys.ModifierKeys.Shift, code_key);
-                };
-                if (alt)
-                {
-                    saveThis.Items.Add("1");
-                    if (code_key > 0)
-                        hook.RegisterHotKey(KeyboardHotKeys.ModifierKeys.Alt, code_key);
-                };
-            }
 
+                uint modeKey = 0;
+                if (Tkeys.alt)
+                    modeKey += 1;
+                if (Tkeys.control)
+                    modeKey += 2;
+                if (Tkeys.shift)
+                    modeKey += 4;
+
+                saveThis.Items.Add(Tkeys.x.ToString());
+                saveThis.Items.Add(modeKey.ToString());
+
+                if (Tkeys.alt || Tkeys.control || Tkeys.shift)
+                    hook.RegisterHotKey((KeyboardHotKeys.ModifierKeys)modeKey , Tkeys.x);
+               
+            }
 
             return dialogResult;
         }
@@ -535,7 +503,7 @@ namespace LauncherDesktop
  
             string arquivo = mylist.SelectedItem.ToString();
             string[] ExistIconEx = arquivo.Split(';');
-            arquivo = ExistIconEx[0];
+            arquivo = ExistIconEx[0].Split('|')[0];
             string caminho = Path.GetDirectoryName(arquivo);
             string nome = Path.GetFileName(arquivo);
             var processInfo = new System.Diagnostics.ProcessStartInfo();
@@ -608,7 +576,6 @@ namespace LauncherDesktop
         }
         void LoadFile(string myFile)
         {
-          
             //Saves
             _ = ConfigGroups.Items.Add("<ITENS_G>");
             _ = ConfigAdmin.Items.Add("<ITENS_C>");
@@ -666,22 +633,36 @@ namespace LauncherDesktop
                     if (!groups && !admins && !AD_Groups && !config_itens && !macros)
                     {
                         string[] FileAndIconEx = lines[i].Split(';');
+                        string[] FileRename = new string[2];
+                        FileRename = lines[i].Split('|');
+                        if (FileRename.Length > 1)
+                        {
+                            FileAndIconEx = FileRename[0].Split(';');
+                            FileRename[0] = result;
+                            result = FileRename[1];
+                        }
                         if (!File.Exists(FileAndIconEx[0]))
                         {
                             wARNINGToolStripMenuItem.Visible = true;
+
+                            MessageBox.Show(FileAndIconEx[0]);
                             wARNINGToolStripMenuItem.DropDownItems.Add(FileAndIconEx[0]);
                             continue;
                         }
-
                         mylist.Items.Add(lines[i]);
+                        
                         Icon largeIcon = null;
-                        result = Path.GetFileNameWithoutExtension(FileAndIconEx[0]);
+
+                        if (FileRename.Length > 1)
+                            result = Path.GetFileNameWithoutExtension(FileRename[1]);
+                        else
+                            result = Path.GetFileNameWithoutExtension(FileAndIconEx[0]);
 
                         if (FileAndIconEx.Length > 1)
                             largeIcon = IconExtractor.ExtractIconLarge(FileAndIconEx[1]);
                         else
-                            largeIcon = IconExtractor.ExtractIconLarge(lines[i]);
-
+                            largeIcon = IconExtractor.ExtractIconLarge(lines[i].Split('|')[0]); // if does have or not
+                        
                         if (largeIcon != null)
                         {
                             lista_icons.Images.Add(largeIcon.ToBitmap());
@@ -689,7 +670,7 @@ namespace LauncherDesktop
                         }else
                             listitens.Items.Add(result, 0);
 
-
+                        //result = FileRename[0];
                     }
                     else if (AD_Groups)
                     {
@@ -723,9 +704,11 @@ namespace LauncherDesktop
                             file_groups = lines[i].Split(':');
                             for (int x = 0; x < listitens.Groups.Count; ++x)
                             {
+                               
                                 if (string.Compare(listitens.Groups[x].Header, file_groups[1]) == 0)
                                 {
                                     int ItemTextIndex = listitens.Items.IndexOf(listitens.FindItemWithText(file_groups[0]));
+                                    //int ItemTextIndex = listitens.Items.IndexOf(listitens.FindItemWithText(file_groups[0]));
                                     listitens.Items[ItemTextIndex].Group = listitens.Groups[x];
 
                                     /* ADD ON CONTEXT GROUPS ITEMS */
@@ -733,8 +716,7 @@ namespace LauncherDesktop
                                         lista_icons.Images[listitens.Items[ItemTextIndex].ImageIndex]);
                                 }
                             }  
-                        }catch
-                        { }
+                        }catch { }
 
                     }
                     else if (admins)
@@ -906,19 +888,26 @@ namespace LauncherDesktop
             string Seach = string.Empty;
             if (DialogResult.OK == InputBox("Pesquisar", "Digite [MACRO] [OQUE QUERO]", ref Seach))
             {
-                string getArg = Seach.Split(' ')[0];
-                Seach = Seach.Remove(0, getArg.Length + 1);
-
-                foreach (string ps in Macros.Items)
+                if (Seach.Split(' ').Length > 1)
                 {
-                    if (ps.Contains(getArg))
+                    string getArg = Seach.Split(' ')[0];
+               
+                    Seach = Seach.Remove(0, getArg.Length + 1);
+
+                    foreach (string ps in Macros.Items)
                     {
-                        Seach = ps.Remove(0, getArg.Length + 1) + Seach;
-                        Process.Start(Seach);
-                        WindowState = FormWindowState.Minimized;
-                        break;
+                        if (ps.Contains(getArg))
+                        {
+                            Seach = ps.Remove(0, getArg.Length + 1) + Seach;
+                            Process.Start(Seach);
+                            WindowState = FormWindowState.Minimized;
+                            break;
+                        }
                     }
                 }
+                else
+                    MessageBox.Show("Use a seguinte sintaxy [MACRO] [OQUE QUER PESQUISAR] exemplo: '-google bolas de futebool'","Sintaxy incorreta");
+                
             }
         }
         void Current_KeyPressed(object sender, KeyboardHotKeys.KeyPressedEventArgs e)
@@ -1087,6 +1076,17 @@ namespace LauncherDesktop
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+            if( Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Application.ExecutablePath)).Length > 1)
+            {
+                MessageBox.Show("Não pode mais de um APPLAUNCHER aberto!");
+                Close();
+
+            }
+                
+
+
+
             TitleProgram = this.Text + " v" + Ver;
             this.Text = TitleProgram;
 
@@ -1242,30 +1242,14 @@ namespace LauncherDesktop
             if (String.Compare("Sair", e.ClickedItem.Text) == 0)
             {
                 Close();
-            }/*else //Old Ver.
-            {
-                int index = cm_itens.Items.IndexOf(e.ClickedItem);
-                //MessageBox.Show(e.ClickedItem.Text + " " + index);
-                try
-                {
-                    listitens.Items[index].Selected = true;
-                    Run(false);
-                }
-                catch
-                {
-                   
-                }
-            }*/
+            }
         }
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Minimized)
+            /* if (WindowState == FormWindowState.Minimized)
             {
-                // Hide();
-                //notifyIcon1.Visible = true;
-                //notifyIcon1.BalloonTipText = "Estamos aqui na barra basta clica para abrir novamente :)";
-                //notifyIcon1.ShowBalloonTip(1000);
-            }
+
+            }*/
         }
         private void cm_itemsDropItems(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -1395,6 +1379,33 @@ namespace LauncherDesktop
 
             };
         }
+
+        private void renomeiarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            string newname = string.Empty;
+
+            DialogResult rest = InputBox("Renomeia item", "novo nome", ref newname);
+           
+            if(rest == DialogResult.OK)
+            {
+                int index = listitens.SelectedItems[0].Index;
+                string arq = mylist.Items[index].ToString();
+                string[] Rename = arq.Split('|');
+
+                if (Rename.Length > 1)
+                    mylist.Items[index] = Rename[0] + "|" + newname;
+                else
+                    mylist.Items[index] += "|" + newname;
+
+
+                listitens.SelectedItems[0].Text = newname;
+
+                ChangueItens();
+            }
+
+        }
+
         //Joke functions
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -1474,9 +1485,11 @@ namespace LauncherDesktop
         {
             Key_Macros.Items.Clear();
             _ = Key_Macros.Items.Add("<K_M>");
-            if (RegisterKeys(hook, ref Key_Macros) == DialogResult.OK)   //Need now unistall old hotkeys
+            if (RegisterKeys(hook, ref Key_Macros) == DialogResult.OK)  
                 ChangueItens();
 
         }
+
+  
     }
 }

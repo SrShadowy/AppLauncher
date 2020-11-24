@@ -76,6 +76,7 @@
             this.definirIconeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tmr_func = new System.Windows.Forms.Timer(this.components);
+            this.renomeiarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.cms_viewer.SuspendLayout();
             this.SuspendLayout();
@@ -399,9 +400,10 @@
             this.removerToolStripMenuItem,
             this.moverParaOGrupoToolStripMenuItem,
             this.definirComoADMINToolStripMenuItem,
-            this.definirIconeToolStripMenuItem});
+            this.definirIconeToolStripMenuItem,
+            this.renomeiarToolStripMenuItem});
             this.cms_viewer.Name = "contextMenuStrip1";
-            this.cms_viewer.Size = new System.Drawing.Size(186, 158);
+            this.cms_viewer.Size = new System.Drawing.Size(186, 202);
             // 
             // abrirToolStripMenuItem
             // 
@@ -461,6 +463,13 @@
             // tmr_func
             // 
             this.tmr_func.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // renomeiarToolStripMenuItem
+            // 
+            this.renomeiarToolStripMenuItem.Name = "renomeiarToolStripMenuItem";
+            this.renomeiarToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.renomeiarToolStripMenuItem.Text = "Renomear";
+            this.renomeiarToolStripMenuItem.Click += new System.EventHandler(this.renomeiarToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -537,6 +546,7 @@
         private System.Windows.Forms.ToolStripMenuItem criarMacroDePesquisaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editarMacroToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hotkeyMacroToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem renomeiarToolStripMenuItem;
     }
 }
 
