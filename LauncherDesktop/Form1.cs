@@ -363,20 +363,6 @@ namespace LauncherDesktop
                         TextKeys(Convert.ToString(e.KeyCode), true);
                         Tkeys.x = e.KeyCode;
                         break;
-                  //Because??? Anyway
-                        /* case Keys.Control:
-                        TextKeys("control", true);
-                        Tkeys.control = true;
-                        break;
-                    case Keys.Alt:
-                        TextKeys("alt", true);
-                        Tkeys.alt = true;
-                        break;
-                    case Keys.Shift:
-                        TextKeys("shift", true);
-                        Tkeys.alt = true;
-                        break;
-                        */
                 }
 
             }
@@ -1389,18 +1375,28 @@ namespace LauncherDesktop
            
             if(rest == DialogResult.OK)
             {
+              
                 int index = listitens.SelectedItems[0].Index;
+                
+            
                 string arq = mylist.Items[index].ToString();
                 string[] Rename = arq.Split('|');
-
+                
                 if (Rename.Length > 1)
                     mylist.Items[index] = Rename[0] + "|" + newname;
                 else
                     mylist.Items[index] += "|" + newname;
 
 
+                var itemIndex = listitens.Items.IndexOf(listitens.SelectedItems[0]);
+                int removeAt = ConfigGroups.FindStringExact(listitens.Items[itemIndex].Text);
+                if (removeAt > 0)
+                {
+                    ConfigGroups.Items.RemoveAt(removeAt);
+                }
                 listitens.SelectedItems[0].Text = newname;
-
+                string newGroup = listitens.Items[itemIndex].Text + ":" + listitens.SelectedItems[0].Group.Header;
+                ChangeGroup(newGroup);
                 ChangueItens();
             }
 
