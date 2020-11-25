@@ -48,7 +48,7 @@ namespace LauncherDesktop
         string TitleProgram = string.Empty;
         bool question = false;
         readonly string myFile = Application.StartupPath + "\\DATA.bin";
-        readonly string Ver = "20.11.24";
+        readonly string Ver = "20.11.25";
         public string NewVersion = string.Empty;
         
         public class IconExtractor
@@ -835,13 +835,26 @@ namespace LauncherDesktop
             return false;
 
         }
+        
+        int find_string(string txt, ListBox search)
+        {
+            for (int i = 0; i < search.Items.Count; ++i)
+            {
+                string lbString = search.Items[i].ToString();
+                if (lbString.Contains(txt))
+                    return i;
+            }
+            return ListBox.NoMatches;
+        }
+        
         void ChangeGroup(string newGroup)
         {
             var itemIndex = listitens.Items.IndexOf(listitens.SelectedItems[0]);
-            int removeAt = ConfigGroups.FindStringExact(listitens.Items[itemIndex].Text);
-            if (removeAt > 0)
+            int removeAt = find_string(listitens.Items[itemIndex].Text, ConfigGroups);
+            while (removeAt != ListBox.NoMatches )
             {
                 ConfigGroups.Items.RemoveAt(removeAt);
+                removeAt = find_string(listitens.Items[itemIndex].Text, ConfigGroups);
             }
             ConfigGroups.Items.Add(newGroup);
         }
@@ -1372,31 +1385,79 @@ namespace LauncherDesktop
             string newname = string.Empty;
 
             DialogResult rest = InputBox("Renomeia item", "novo nome", ref newname);
-           
-            if(rest == DialogResult.OK)
+
+            if (rest == DialogResult.OK && newname != string.Empty)
             {
-              
                 int index = listitens.SelectedItems[0].Index;
-                
-            
                 string arq = mylist.Items[index].ToString();
                 string[] Rename = arq.Split('|');
-                
+
                 if (Rename.Length > 1)
                     mylist.Items[index] = Rename[0] + "|" + newname;
                 else
                     mylist.Items[index] += "|" + newname;
 
-
                 var itemIndex = listitens.Items.IndexOf(listitens.SelectedItems[0]);
+
+                bool havegroups = false;
+                for (int groups = 0; groups < listitens.Groups.Count; ++groups)
+                {
+                    if (listitens.Groups[groups] == listitens.Items[index].Group)
+                    {
+                        havegroups = true;
+                        break;
+                    }
+                }
+
                 int removeAt = ConfigGroups.FindStringExact(listitens.Items[itemIndex].Text);
-                if (removeAt > 0)
+                while (removeAt != ListBox.NoMatches)
                 {
                     ConfigGroups.Items.RemoveAt(removeAt);
+                    removeAt = ConfigGroups.FindStringExact(listitens.Items[itemIndex].Text);
                 }
+
                 listitens.SelectedItems[0].Text = newname;
-                string newGroup = listitens.Items[itemIndex].Text + ":" + listitens.SelectedItems[0].Group.Header;
-                ChangeGroup(newGroup);
+                if(havegroups)
+                {
+                    string newGroup = listitens.SelectedItems[0].Text + ":" + listitens.SelectedItems[0].Group.Header;
+                    ChangeGroup(newGroup);
+                }
+
+                ChangueItens();
+
+            } else if (rest == DialogResult.OK && newname == string.Empty)
+            {
+                int index = listitens.SelectedItems[0].Index;
+                var itemIndex = listitens.Items.IndexOf(listitens.SelectedItems[0]);
+                string arq = mylist.Items[index].ToString().Split('|')[0];
+                mylist.Items[index] = arq;
+
+                bool havegroups = false;
+                for (int groups = 0; groups < listitens.Groups.Count; ++groups)
+                {
+                    if (listitens.Groups[groups] == listitens.Items[index].Group)
+                    {
+                        havegroups = true;
+                        break;
+                    }
+                }
+
+                int removeAt = ConfigGroups.FindStringExact(listitens.Items[itemIndex].Text);
+                while (removeAt != ListBox.NoMatches)
+                {
+                    ConfigGroups.Items.RemoveAt(removeAt);
+                    removeAt = ConfigGroups.FindStringExact(listitens.Items[itemIndex].Text);
+                }
+
+                listitens.SelectedItems[0].Text = Path.GetFileNameWithoutExtension(arq.Split(';')[0]);
+                string newGroup = String.Empty;
+
+                if(havegroups)
+                {
+                    newGroup = listitens.SelectedItems[0].Text + ":" + listitens.SelectedItems[0].Group.Header;
+                    ChangeGroup(newGroup);
+                }
+
                 ChangueItens();
             }
 
