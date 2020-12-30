@@ -3,21 +3,19 @@ O código foi obtido na thread abaixo, e modificado por mim, Herbert Lausmann:
 http://stackoverflow.com/questions/2450373/set-global-hotkeys-using-c-sharp
 Créditos ao criador, AaronLS.
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace System.Windows.Forms
 {
     public sealed class KeyboardHotKeys : IDisposable
     {
         #region Class Code
+
         // Registers a hot key with Windows.
         [DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+
         // Unregisters the hot key with Windows.
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
@@ -49,7 +47,7 @@ namespace System.Windows.Forms
                     // get the keys.
                     Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
                     ModifierKeys modifier = (ModifierKeys)((int)m.LParam & 0xFFFF);
-                   // MessageBox.Show(modifier.ToString() + Convert.ToChar(key));
+                    // MessageBox.Show(modifier.ToString() + Convert.ToChar(key));
                     // invoke the event to notify the parent.
                     if (KeyPressed != null)
                         KeyPressed(this, new KeyPressedEventArgs(modifier, key));
@@ -65,7 +63,7 @@ namespace System.Windows.Forms
                 this.DestroyHandle();
             }
 
-            #endregion
+            #endregion IDisposable Members
         }
 
         private Window _window = new Window();
@@ -102,9 +100,7 @@ namespace System.Windows.Forms
             {
                 UnregisterHotKey(_window.Handle, i);
             }
-
         }
-
 
         /// <summary>
         /// A hot key has been pressed.
@@ -125,7 +121,7 @@ namespace System.Windows.Forms
             _window.Dispose();
         }
 
-        #endregion
+        #endregion IDisposable Members
 
         #region Others
 
@@ -165,10 +161,15 @@ namespace System.Windows.Forms
             Shift = 4,
             Win = 8
         }
-        #endregion
-        #endregion
+
+        #endregion Others
+
+        #endregion Class Code
+
         #region Singleton
+
         private static KeyboardHotKeys _Current;
+
         public static KeyboardHotKeys Current
         {
             get
@@ -183,6 +184,7 @@ namespace System.Windows.Forms
         {
             throw new NotImplementedException();
         }
-        #endregion
+
+        #endregion Singleton
     }
 }
