@@ -36,13 +36,12 @@ Você pode definir macros de pesquisas que vão aparecer diretamente em seu nave
 ![Demonstração do hotkey & macro](https://i.imgur.com/YxcUsjd.gif)
 
 ## Exportação de configuração e atualizações 🔄
-Existe uma pequena lista onde fica salvo todas as informações do seu AppLauncher podendo até edita-la manualmente
+Existe uma pequena lista onde fica salvo todas as informações do seu AppLauncher podendo até edita-la manualmente:
+
 ![Lista](https://i.imgur.com/bGFakUw.gif)
 
 **AS ATUALIZAÇÕES** são feita de forma automatizadas se você preferir, com o programa adicional UpdateTools você consegue controla o versionamento e até voltar para a ultima versão usada caso a atual lhe dê algum problema lembre-se sempre de caso isso acontecer você pode deixa nos issues
 ![enter image description here](https://i.imgur.com/MCr3XBI.png)
 
-
-#SEM MAIS DESCULPAS! 🙅🏻‍
+# SEM MAIS DESCULPAS! 🙅🏻‍♂️
 Deixe seu desktop mais leve e limpo! sem poluições e organize tudo no APPLAUNCHER, tem a opção de abrir junto ao sistema!
-
