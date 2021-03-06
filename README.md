@@ -7,18 +7,21 @@ Sabemos disso vamos aos pontos!
 # O Programa 👨🏻‍💻
 
 O APPLAUNCHER é um pequeno programa com sua simples proposta de armazenar atalho! obvio ele não vai da problemas diretórios e algo do tipo, além de ser simples e customizavel, você pode trocar ícone e nome dos atalhos deixado nele. Launcher tem um design simples de se ligar e é um projeto humorado feito para praticar a linguagem C# em questão para a plataforma da **Microsoft**
+
 ![Imagem ilustrativa](https://i.imgur.com/IR7daB6.png)
-(Design da barra superior editada com tema do windows)
+(Design da barra superior editada com tema do Windows)
 
 
 ## Organização 🗂️
 
 Nele é possível criar grupos para distinguir vários tipos de atalhos, como GAMES, OFFICE, DECODES, ETC.
+
 ![Adicionando grupo](https://i.imgur.com/WJvN0yz.gif)
 
 ## Mudando nome e ícones 😶>😃
 
 Todos os arquivos tem direitos de renomeação e troca de ícone, deixando seu programa mais sua cara, e os nomes do executáveis também.
+
 ![Alterando icone](https://i.imgur.com/ag2iTht.gif)
 
 ## Permissões 🛂
@@ -29,6 +32,7 @@ Você pode deixa um arquivo executar automaticamente como administrador e essa p
 ## Modo minimalista🦹🏻‍♂️
 
 você pode deixa em seu modo minimalista que fica na barra de notificações onde você localiza o ícone de internet e notificação e mostrar area de trabalho entre outras, com um simples click direito e aparece todos os seus grupos para qual programa você quer abrir
+
 ![demonstração de como abrir itens](https://i.imgur.com/u7zz7LJ.gif)
 
 # Hotkey & macros! (BETA) ⌨️
@@ -44,4 +48,5 @@ Existe uma pequena lista onde fica salvo todas as informações do seu AppLaunch
 ![enter image description here](https://i.imgur.com/MCr3XBI.png)
 
 # SEM MAIS DESCULPAS! 🙅🏻‍♂️
-Deixe seu desktop mais leve e limpo! sem poluições e organize tudo no APPLAUNCHER, tem a opção de abrir junto ao sistema!
+Deixe seu desktop mais leve e limpo! sem poluições e organize tudo no APPLAUNCHER, tem a opção de abrir junto ao sistema! e sem ESFORÇO! As versões compiladas estão aqui:
+[LINK DOS COMPILADOS 🔗](https://github.com/SrShadowy/AppLauncher/releases) 
