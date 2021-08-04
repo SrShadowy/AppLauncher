@@ -43,7 +43,7 @@ namespace LauncherDesktop
         private string TitleProgram = string.Empty;
         private bool question = false;
         private readonly string myFile = Application.StartupPath + "\\DATA.bin";
-        private const string Ver = "20.12.30";
+        private const string Ver = "21.08.29";
         public string NewVersion = string.Empty;
 
         public class IconExtractor
@@ -148,6 +148,50 @@ namespace LauncherDesktop
 
             return dialogResult;
         }
+
+        public static DialogResult AskAgain(string title, string promptText, ref bool value)
+        {
+            Form form = new Form();
+            Label label = new Label();
+            CheckBox checkbox = new CheckBox();
+            Button buttonOk = new Button();
+            Button buttonCancel = new Button();
+
+            form.Text = title;
+            label.Text = promptText;
+            checkbox.Checked = !value;
+            checkbox.Text = "Não me pergunte novamente!";
+            buttonOk.Text = "OK";
+            buttonCancel.Text = "No";
+            buttonOk.DialogResult = DialogResult.Yes;
+            buttonCancel.DialogResult = DialogResult.No;
+
+            label.SetBounds(12, 20, 372, 13);
+            checkbox.SetBounds(12, 36, 372, 20);
+            buttonOk.SetBounds(228, 72, 75, 23);
+            buttonCancel.SetBounds(309, 72, 75, 23);
+
+            label.AutoSize = true;
+            checkbox.Anchor |= AnchorStyles.Bottom | AnchorStyles.Left;
+            buttonOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+            form.ClientSize = new Size(396, 107);
+            form.Controls.AddRange(new Control[] { label, checkbox, buttonOk, buttonCancel });
+            form.ClientSize = new Size(Math.Max(300, label.Right + 10), form.ClientSize.Height);
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+            form.AcceptButton = buttonOk;
+            form.CancelButton = buttonCancel;
+
+            DialogResult dialogResult = form.ShowDialog();
+            value = checkbox.Checked;
+
+            return dialogResult;
+        }
+
 
         // Macro Editor
         public static DialogResult ShowMacros(string title, ref ListBox Macros)
@@ -758,18 +802,35 @@ namespace LauncherDesktop
 
         private void QuestionHide()
         {
-            if (!question)
+            if (!Properties.Settings.Default.question)
+            {
+                if (!question)
+                {
+                    question = true;
+                    var ButtonsResult = AskAgain("Hide me?", "Deseja me esconder?", ref question); //MessageBox.Show("Deseja Esconder?", "Hide me", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (ButtonsResult == DialogResult.Yes)
+                        escondeAoAbrirAlgoToolStripMenuItem.Checked = true;
+
+
+                }
+
+                Properties.Settings.Default.hide = escondeAoAbrirAlgoToolStripMenuItem.Checked;
+                Properties.Settings.Default.question = question;
+                Properties.Settings.Default.Save();
+                question = true;
+            }
+            else
             {
                 question = true;
-                var ButtonsResult = MessageBox.Show("Deseja Esconder?", "Hide me", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (ButtonsResult == DialogResult.Yes)
-                    escondeAoAbrirAlgoToolStripMenuItem.Checked = true;
+                escondeAoAbrirAlgoToolStripMenuItem.Checked = Properties.Settings.Default.hide;
             }
+
             if (escondeAoAbrirAlgoToolStripMenuItem.Checked)
             {
                 this.Hide();
                 notifyIcon1.Visible = true;
             }
+
         }
 
         private bool VerChange()
@@ -883,6 +944,7 @@ namespace LauncherDesktop
 
         private void Current_KeyPressed(object sender, KeyboardHotKeys.KeyPressedEventArgs e)
         {
+            SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
             Pesquisa();
         }
 
@@ -1045,16 +1107,53 @@ namespace LauncherDesktop
             ChangueItens();
         }
 
+        private const int SW_SHOWMAXIMIZED = 3;
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        [DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Application.ExecutablePath)).Length > 1)
+            Process[] pc = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Application.ExecutablePath));
+            if (pc.Length > 1)
             {
-                MessageBox.Show("Não pode mais de um APPLAUNCHER aberto!");
-                Close();
+                this.Hide();
+                //MessageBox.Show("Não pode mais de um APPLAUNCHER aberto!");
+                for (int i = 0; i < pc.Length; i++)
+                {
+
+                  if (pc[i].Id != Process.GetCurrentProcess().Id)
+                  {
+                        if (ShowWindow(pc[i].MainWindowHandle, SW_SHOWMAXIMIZED))
+                        {
+                          
+                            SetForegroundWindow(pc[i].MainWindowHandle);
+
+                            this.Close();
+                        }
+                        else
+                        {
+                            pc[i].Kill();
+                            Thread.Sleep(100);
+                            this.Show();
+                            break;
+                        }
+                  }
+                }
+               
             }
+            
 
             TitleProgram = this.Text + " v" + Ver;
             this.Text = TitleProgram;
+            if (Properties.Settings.Default.w != 0 && Properties.Settings.Default.h != 0)
+            {
+                Console.WriteLine($"VALUES W :{Properties.Settings.Default.w} H: {Properties.Settings.Default.h}" );
+                this.Width = Properties.Settings.Default.w;
+                this.Height = Properties.Settings.Default.h;
+            }
 
             //Joken
             if (DateTime.Today.Day == 1 && DateTime.Today.Month == 4)
@@ -1114,8 +1213,15 @@ namespace LauncherDesktop
 
         private void Form1_VisibleChanged(object sender, EventArgs e)
         {
-            if (Visible == true)
-            { notifyIcon1.Visible = false; }
+            try
+            {
+                if (Visible == true && notifyIcon1 != null)
+                { notifyIcon1.Visible = false; }
+            }
+            catch
+            {
+                Console.WriteLine("Visible error?");
+            }
         }
 
         private void AbrirListaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1163,7 +1269,7 @@ namespace LauncherDesktop
 
         private void SobreToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            MessageBox.Show("\tCriado por Sr.Shadowy @2016 @2020" + Environment.NewLine +
+            MessageBox.Show("\tCriado por Sr.Shadowy @2016 @2021" + Environment.NewLine +
                 "\t\tVer " + Ver + Environment.NewLine + "APP LAUNCHER inspirado e construido graças ao Smoll_iCe", "Sobre...");
         }
 
@@ -1500,6 +1606,22 @@ namespace LauncherDesktop
             _ = Key_Macros.Items.Add("<K_M>");
             if (RegisterKeys(hook, ref Key_Macros) == DialogResult.OK)
                 ChangueItens();
+        }
+        byte first_ignore = 0;
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+          if (first_ignore != 0)
+          {
+                Properties.Settings.Default.w = this.Width;
+                Properties.Settings.Default.h = this.Height;
+                Properties.Settings.Default.Save();
+          }
+          first_ignore++;
+        }
+
+        private void resetToDefaultToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Reset();
         }
     }
 }

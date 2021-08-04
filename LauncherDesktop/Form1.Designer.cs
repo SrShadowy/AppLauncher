@@ -64,6 +64,7 @@
             this.editarMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hotkeyMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wARNINGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetToDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lista_icons = new System.Windows.Forms.ImageList(this.components);
             this.listitens = new System.Windows.Forms.ListView();
             this.cms_viewer = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -74,9 +75,9 @@
             this.moverParaOGrupoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.definirComoADMINToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.definirIconeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renomeiarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tmr_func = new System.Windows.Forms.Timer(this.components);
-            this.renomeiarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.cms_viewer.SuspendLayout();
             this.SuspendLayout();
@@ -99,7 +100,7 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.menuStrip1.BackColor = System.Drawing.Color.DarkGray;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editarToolStripMenuItem,
@@ -112,6 +113,7 @@
             // 
             // fileToolStripMenuItem
             // 
+            this.fileToolStripMenuItem.BackColor = System.Drawing.Color.DimGray;
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.abrirListaToolStripMenuItem,
             this.importaListaToolStripMenuItem,
@@ -126,40 +128,41 @@
             // abrirListaToolStripMenuItem
             // 
             this.abrirListaToolStripMenuItem.Name = "abrirListaToolStripMenuItem";
-            this.abrirListaToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.abrirListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.abrirListaToolStripMenuItem.Text = "Abrir Lista";
             this.abrirListaToolStripMenuItem.Click += new System.EventHandler(this.AbrirListaToolStripMenuItem_Click);
             // 
             // importaListaToolStripMenuItem
             // 
             this.importaListaToolStripMenuItem.Name = "importaListaToolStripMenuItem";
-            this.importaListaToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.importaListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.importaListaToolStripMenuItem.Text = "Importa lista";
             this.importaListaToolStripMenuItem.Click += new System.EventHandler(this.ImportaListaToolStripMenuItem_Click);
             // 
             // esconderToolStripMenuItem
             // 
             this.esconderToolStripMenuItem.Name = "esconderToolStripMenuItem";
-            this.esconderToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.esconderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.esconderToolStripMenuItem.Text = "Esconder";
             this.esconderToolStripMenuItem.Click += new System.EventHandler(this.EsconderToolStripMenuItem_Click);
             // 
             // salvarListaToolStripMenuItem
             // 
             this.salvarListaToolStripMenuItem.Name = "salvarListaToolStripMenuItem";
-            this.salvarListaToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.salvarListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.salvarListaToolStripMenuItem.Text = "Salvar lista";
             this.salvarListaToolStripMenuItem.Click += new System.EventHandler(this.SalvarListaToolStripMenuItem_Click);
             // 
             // sairToolStripMenuItem
             // 
             this.sairToolStripMenuItem.Name = "sairToolStripMenuItem";
-            this.sairToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.sairToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sairToolStripMenuItem.Text = "Sair";
             this.sairToolStripMenuItem.Click += new System.EventHandler(this.SairToolStripMenuItem_Click);
             // 
             // editarToolStripMenuItem
             // 
+            this.editarToolStripMenuItem.BackColor = System.Drawing.Color.DimGray;
             this.editarToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.adicionarToolStripMenuItem1,
             this.abrirLocalToolStripMenuItem1,
@@ -266,12 +269,14 @@
             // 
             // outrosToolStripMenuItem
             // 
+            this.outrosToolStripMenuItem.BackColor = System.Drawing.Color.DimGray;
             this.outrosToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.inicializarComOOSToolStripMenuItem,
             this.verificarUpdateToolStripMenuItem,
             this.sobreToolStripMenuItem,
             this.funçõesSuperUteisToolStripMenuItem,
-            this.wARNINGToolStripMenuItem});
+            this.wARNINGToolStripMenuItem,
+            this.resetToDefaultToolStripMenuItem});
             this.outrosToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.outrosToolStripMenuItem.Name = "outrosToolStripMenuItem";
             this.outrosToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
@@ -364,6 +369,13 @@
             this.wARNINGToolStripMenuItem.Visible = false;
             this.wARNINGToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.wARNINGToolStripMenuItem_DropDownItemClicked);
             // 
+            // resetToDefaultToolStripMenuItem
+            // 
+            this.resetToDefaultToolStripMenuItem.Name = "resetToDefaultToolStripMenuItem";
+            this.resetToDefaultToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.resetToDefaultToolStripMenuItem.Text = "Reset to Default";
+            this.resetToDefaultToolStripMenuItem.Click += new System.EventHandler(this.resetToDefaultToolStripMenuItem_Click);
+            // 
             // lista_icons
             // 
             this.lista_icons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("lista_icons.ImageStream")));
@@ -373,7 +385,7 @@
             // listitens
             // 
             this.listitens.AllowDrop = true;
-            this.listitens.BackColor = System.Drawing.Color.White;
+            this.listitens.BackColor = System.Drawing.Color.Silver;
             this.listitens.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.listitens.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listitens.HideSelection = false;
@@ -403,7 +415,7 @@
             this.definirIconeToolStripMenuItem,
             this.renomeiarToolStripMenuItem});
             this.cms_viewer.Name = "contextMenuStrip1";
-            this.cms_viewer.Size = new System.Drawing.Size(186, 202);
+            this.cms_viewer.Size = new System.Drawing.Size(186, 180);
             // 
             // abrirToolStripMenuItem
             // 
@@ -454,6 +466,13 @@
             this.definirIconeToolStripMenuItem.Text = "Definir icone";
             this.definirIconeToolStripMenuItem.Click += new System.EventHandler(this.definirIconeToolStripMenuItem_Click);
             // 
+            // renomeiarToolStripMenuItem
+            // 
+            this.renomeiarToolStripMenuItem.Name = "renomeiarToolStripMenuItem";
+            this.renomeiarToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.renomeiarToolStripMenuItem.Text = "Renomear";
+            this.renomeiarToolStripMenuItem.Click += new System.EventHandler(this.renomeiarToolStripMenuItem_Click);
+            // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
@@ -463,13 +482,6 @@
             // tmr_func
             // 
             this.tmr_func.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // renomeiarToolStripMenuItem
-            // 
-            this.renomeiarToolStripMenuItem.Name = "renomeiarToolStripMenuItem";
-            this.renomeiarToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.renomeiarToolStripMenuItem.Text = "Renomear";
-            this.renomeiarToolStripMenuItem.Click += new System.EventHandler(this.renomeiarToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -490,6 +502,7 @@
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             this.VisibleChanged += new System.EventHandler(this.Form1_VisibleChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.cms_viewer.ResumeLayout(false);
@@ -547,6 +560,7 @@
         private System.Windows.Forms.ToolStripMenuItem editarMacroToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hotkeyMacroToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renomeiarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resetToDefaultToolStripMenuItem;
     }
 }
 
